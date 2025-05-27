@@ -45,16 +45,16 @@
 
 :root {
   --radius: 1rem;
-  --background: oklch(0.985 0 0);
-  --foreground: oklch(0.37 0.01 286);
+  --background: oklch(0.98 0.02 74 / 20%);
+  --foreground: oklch(0.44 0.01 286);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
   --primary: oklch(0.623 0.214 259.815);
   --primary-foreground: oklch(0.97 0.014 254.604);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --secondary: oklch(0.93 0.01 265);
+  --secondary-foreground: oklch(0.37 0.03 260);
   --muted: oklch(0.967 0.001 286.375);
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
@@ -118,5 +118,14 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  button {
+    @apply cursor-pointer;
+  }
+}
+
+@layer utilities {
+  .wrapper {
+    @apply mx-auto max-w-[1920px] w-full px-4 sm:px-6 lg:px-6;
   }
 }

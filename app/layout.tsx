@@ -39,8 +39,10 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <AppSidebar />
-            <Header />
-            {children}
+            <div className="flex w-full flex-col">
+              <Header />
+              {children}
+            </div>
           </SidebarProvider>
         </ThemeProvider>
       </body>
