@@ -128,4 +128,17 @@
   .wrapper {
     @apply mx-auto max-w-[1920px] w-full px-4 sm:px-6 lg:px-6;
   }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .hidden-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+  }
 }

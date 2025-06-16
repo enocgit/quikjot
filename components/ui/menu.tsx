@@ -22,7 +22,7 @@ export default function Menu() {
           <UserIcon size={16} />
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-destructive focus:bg-destructive/10">
+        <DropdownMenuItem className="text-destructive dark:text-destructive focus:bg-destructive/10">
           <LogOutIcon size={16} className="text-destructive" />
           Logout
         </DropdownMenuItem>

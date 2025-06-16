@@ -4,6 +4,7 @@ import { Typography } from "../ui/typography";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { FOLDER_COLORS } from "@/lib/constants";
+import { format } from "date-fns";
 
 interface FolderCardProps {
   title: string;
@@ -20,10 +21,10 @@ const FolderCard: React.FC<FolderCardProps> = ({ title, date, colorIndex }) => {
 
   return (
     <Card
-      className="relative p-0 w-52 rounded-lg"
+      className="relative p-0 w-52 h-52 min-w-52 rounded-lg"
       style={{ background: colorScheme.bg }}
     >
-      <CardContent className="p-5">
+      <CardContent className="p-5 space-y-3">
         <Button
           variant="ghost"
           size="icon"
@@ -52,11 +53,14 @@ const FolderCard: React.FC<FolderCardProps> = ({ title, date, colorIndex }) => {
             d="M40,12H8c-2.2,0-4,1.8-4,4v20c0,2.2,1.8,4,4,4h32c2.2,0,4-1.8,4-4V16C44,13.8,42.2,12,40,12z"
           ></path>
         </svg>
-        <Typography variant="h4" className="pt-1 pb-3 dark:text-background">
+        <Typography
+          variant="h4"
+          className="pt-1 text-secondary-foreground line-clamp-1 dark:text-muted"
+        >
           {title}
         </Typography>
-        <Typography className="text-secondary-foreground dark:text-background">
-          {date}
+        <Typography className="text-muted-foreground dark:text-gray-500">
+          {format(new Date(date), "MMM yy")}
         </Typography>
       </CardContent>
     </Card>

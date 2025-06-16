@@ -25,3 +25,21 @@ export const FOLDER_COLORS = [
     iconBody: "#f8a685",
   },
 ];
+
+export const FILE_COLORS = [
+  {
+    bg: "#fce2cb",
+  },
+  {
+    bg: "#fdefcb",
+  },
+  {
+    bg: "#deead8",
+  },
+  {
+    bg: "#e9d4ea",
+  },
+  {
+    bg: "#fdd0c2",
+  },
+];
