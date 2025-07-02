@@ -35,7 +35,7 @@ export default function FolderSection() {
             onPrev={handlePrevMonth}
             onNext={handleNextMonth}
           />
-          <Link href="/" className="text-secondary-foreground w-fit">
+          <Link href="/folders" className="text-secondary-foreground w-fit">
             See All
           </Link>
         </>
