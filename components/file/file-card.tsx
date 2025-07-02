@@ -5,12 +5,14 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { FILE_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface FileCardProps {
   date: string;
   title: string;
   body: string;
   colorIndex?: number; // Optional: specify color, otherwise random
+  fullWidth?: boolean;
 }
 
 const FileCard: React.FC<FileCardProps> = ({
@@ -18,6 +20,7 @@ const FileCard: React.FC<FileCardProps> = ({
   date,
   colorIndex,
   body,
+  fullWidth = false,
 }) => {
   // Pick a color scheme
   const colorScheme =
@@ -27,7 +30,10 @@ const FileCard: React.FC<FileCardProps> = ({
 
   return (
     <Card
-      className="relative px-0 w-52 min-w-52 h-60 pt-3 rounded-lg"
+      className={cn(
+        "relative px-0 w-52 min-w-52 h-60 pt-3 rounded-lg",
+        fullWidth && "w-full min-w-full xs:min-w-52"
+      )}
       style={{ background: colorScheme.bg }}
     >
       <CardHeader className="grid grid-cols-2 text-secondary-foreground dark:text-background items-center justify-between">

@@ -36,7 +36,7 @@ export default function NoteSection() {
             onPrev={handlePrevMonth}
             onNext={handleNextMonth}
           />
-          <Link href="/" className="text-secondary-foreground w-fit">
+          <Link href="/notes" className="text-secondary-foreground w-fit">
             See All
           </Link>
         </>
