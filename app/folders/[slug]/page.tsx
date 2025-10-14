@@ -10,10 +10,10 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Typography } from "@/components/ui/typography";
-import ButtonWithNavigator from "@/components/button-with-navigator";
 import FileCard from "@/components/file/file-card";
+import ButtonWithNavigator from "@/components/button-with-navigator";
 
-function BreadcrumbComp() {
+function BreadcrumbComp({ slug }: { slug: string }) {
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -30,23 +30,35 @@ function BreadcrumbComp() {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>Folder 1</BreadcrumbPage>
+          <BreadcrumbPage>
+            {slug.charAt(0).toUpperCase() + slug.slice(1)}
+          </BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
   );
 }
 
-export default function FolderPage() {
+export default async function FolderPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
   const renderBreadcrumb = () => {
-    return <BreadcrumbComp />;
+    return <BreadcrumbComp slug={slug} />;
   };
 
   return (
     <main className="wrapper py-vertical">
       <SectionWithBreadcrumb renderBreadcrumb={renderBreadcrumb}>
-        <Typography variant="h3">Folder 1</Typography>
-        <ButtonWithNavigator />
+        <div className="flex items-center justify-between">
+          <Typography variant="h3">
+            {slug.charAt(0).toUpperCase() + slug.slice(1)}
+          </Typography>
+        </div>
+        <ButtonWithNavigator createButtonType="note" />
+
         <div className="file-grid">
           <FileCard
             title="Meeting Notes Genesis Above All Here And About"
@@ -58,24 +70,6 @@ export default function FolderPage() {
             title="Grocery List"
             date="2021-01-01"
             body="This is a note about the grocery list"
-            fullWidth
-          />
-          <FileCard
-            title="Article Draft"
-            date="2021-01-01"
-            body="This is a note about the folder"
-            fullWidth
-          />
-          <FileCard
-            title="Article Draft"
-            date="2021-01-01"
-            body="This is a note about the folder"
-            fullWidth
-          />
-          <FileCard
-            title="Article Draft"
-            date="2021-01-01"
-            body="This is a note about the folder"
             fullWidth
           />
         </div>

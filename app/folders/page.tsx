@@ -40,7 +40,7 @@ export default function FoldersPage() {
     <main className="wrapper py-vertical">
       <SectionWithBreadcrumb renderBreadcrumb={renderBreadcrumb}>
         <Typography variant="h3">Folders</Typography>
-        <ButtonWithNavigator />
+        <ButtonWithNavigator createButtonType="folder" />
         <div className="file-grid">
           <FolderCard title="Folder 2" date="2021-01-01" fullWidth />
           <FolderCard title="Folder 3" date="2021-01-01" fullWidth />

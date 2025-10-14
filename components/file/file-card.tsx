@@ -31,12 +31,12 @@ const FileCard: React.FC<FileCardProps> = ({
   return (
     <Card
       className={cn(
-        "relative px-0 w-52 min-w-52 h-60 pt-3 rounded-lg",
-        fullWidth && "w-full min-w-full xs:min-w-52"
+        "relative h-60 w-full rounded-lg px-0 pt-3 xl:w-52 xl:min-w-52",
+        fullWidth && "w-full min-w-full xl:w-full xl:min-w-full",
       )}
       style={{ background: colorScheme.bg }}
     >
-      <CardHeader className="grid grid-cols-2 text-secondary-foreground dark:text-background items-center justify-between">
+      <CardHeader className="text-secondary-foreground dark:text-background grid grid-cols-2 items-center justify-between">
         <Typography>{format(new Date(date), "MMM yy")}</Typography>
         <Button variant="ghost" size="icon" className="ml-auto">
           <SquarePen />
@@ -45,7 +45,7 @@ const FileCard: React.FC<FileCardProps> = ({
       <CardContent className="space-y-3">
         <Typography
           variant="h4"
-          className="text-secondary-foreground line-clamp-2 dark:text-muted"
+          className="text-secondary-foreground dark:text-muted line-clamp-2"
         >
           {title}
         </Typography>

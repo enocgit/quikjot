@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import FileCard from "@/components/file/file-card";
 import LargeCreateButton from "@/components/shared/large-create-button";
+import { CreateNoteDialog } from "@/components/note/create-note-dialog";
 
 export default function NoteSection() {
   const [month, setMonth] = React.useState<Date>(new Date());
@@ -26,6 +27,10 @@ export default function NoteSection() {
     });
   };
 
+  const handleDateChange = (date: Date) => {
+    setMonth(date);
+  };
+
   return (
     <SectionWithSidebar
       title="My Notes"
@@ -35,6 +40,7 @@ export default function NoteSection() {
             month={month}
             onPrev={handlePrevMonth}
             onNext={handleNextMonth}
+            onDateChange={handleDateChange}
           />
           <Link href="/notes" className="text-secondary-foreground w-fit">
             See All
@@ -50,8 +56,15 @@ export default function NoteSection() {
           <TabsTrigger value="this-month">This Month</TabsTrigger>
         </TabsList>
         <TabsContent value="all">
-          <section className="mt-5 flex xl:flex-row flex-col gap-3">
-            <div className="flex gap-3 overflow-x-auto hidden-scrollbar xl:order-1 order-2">
+          <section className="mt-5 gap-3 xl:flex xl:flex-row">
+            <div className="hidden-scrollbar xxs:grid-cols-2 order-2 grid grid-cols-1 gap-3 overflow-x-auto min-[520px]:grid-cols-3 md:grid-cols-(--file-grid-cols) xl:order-1 xl:flex">
+              <div className="xl:hidden">
+                <CreateNoteDialog
+                  trigger={
+                    <LargeCreateButton label="New File" className="min-h-60" />
+                  }
+                />
+              </div>
               <FileCard
                 title="Meeting Notes Genesis Above All Here And About"
                 date="2021-01-01"
@@ -73,8 +86,12 @@ export default function NoteSection() {
                 body="This is a note about the folder"
               />
             </div>
-            <div className="xl:order-2 order-1">
-              <LargeCreateButton label="New File" className="min-h-60" />
+            <div className="order-1 hidden xl:order-2 xl:block">
+              <CreateNoteDialog
+                trigger={
+                  <LargeCreateButton label="New File" className="min-h-60" />
+                }
+              />
             </div>
           </section>
         </TabsContent>

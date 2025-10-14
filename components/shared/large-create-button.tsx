@@ -15,8 +15,8 @@ export default function LargeCreateButton({
   return (
     <button
       className={cn(
-        "w-52 min-w-52 rounded-lg text-muted-foreground bg-muted border p-5 flex flex-col gap-5 items-center justify-center",
-        className
+        "text-muted-foreground bg-muted flex w-full flex-col items-center justify-center gap-5 rounded-lg border p-5 xl:w-52 xl:min-w-52",
+        className,
       )}
       onClick={onClick}
     >

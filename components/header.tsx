@@ -9,19 +9,19 @@ import Menu from "./ui/menu";
 
 const Header: React.FC = () => {
   return (
-    <header className="w-full flex h-fit justify-between gap-5 px-6 py-4 pt-8 bg-background">
-      <Typography variant="h2" className="font-semibold">
+    <header className="bg-background flex h-fit w-full justify-between gap-5 px-6 py-4 pt-8">
+      <Typography variant="h3" className="font-semibold">
         My Notes
       </Typography>
 
-      <div className="flex-1 flex justify-center">
+      <div className="flex flex-1 justify-center">
         <div className="relative w-full max-w-md">
           <Input
             type="text"
             placeholder="Search notes..."
-            className="pl-10 bg-muted"
+            className="bg-muted/50 pl-10"
           />
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+          <span className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2">
             <Search size={18} />
           </span>
         </div>

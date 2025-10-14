@@ -115,6 +115,8 @@ export function ContextMenuComp({ children }: { children: React.ReactNode }) {
   );
 }
 
+import Link from "next/link";
+
 const FolderCard: React.FC<FolderCardProps> = ({
   title,
   date,
@@ -127,58 +129,62 @@ const FolderCard: React.FC<FolderCardProps> = ({
       ? FOLDER_COLORS[colorIndex % FOLDER_COLORS.length]
       : FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)];
 
+  const slug = title.toLowerCase().replace(/\s+/g, "-");
+
   return (
     <ContextMenuComp>
-      <Card
-        className={cn(
-          "relative p-0 w-52 h-52 min-w-52 rounded-lg cursor-pointer",
-          fullWidth && "w-full min-w-full"
-        )}
-        style={{ background: colorScheme.bg }}
-        role="button"
-      >
-        <CardContent className="p-5 space-y-3">
-          <DropdownMenuComp>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-5 top-5 dark:text-background"
+      <Link href={`/folders/${slug}`}>
+        <Card
+          className={cn(
+            "relative h-52 w-full cursor-pointer rounded-lg p-0 xl:w-52 xl:min-w-52",
+            fullWidth && "w-full min-w-full xl:w-full xl:min-w-full",
+          )}
+          style={{ background: colorScheme.bg }}
+          role="button"
+        >
+          <CardContent className="space-y-3 p-5">
+            <DropdownMenuComp>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="dark:text-background absolute top-5 right-5"
+              >
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuComp>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              x="0px"
+              y="0px"
+              width="87"
+              height="87"
+              viewBox="0 0 48 48"
+              className="relative -left-2"
             >
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuComp>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            x="0px"
-            y="0px"
-            width="87"
-            height="87"
-            viewBox="0 0 48 48"
-            className="relative -left-2"
-          >
-            {/* Folder top */}
-            <path
-              fill={colorScheme.iconTop}
-              d="M40,12H22l-4-4H8c-2.2,0-4,1.8-4,4v8h40v-4C44,13.8,42.2,12,40,12z"
-            ></path>
+              {/* Folder top */}
+              <path
+                fill={colorScheme.iconTop}
+                d="M40,12H22l-4-4H8c-2.2,0-4,1.8-4,4v8h40v-4C44,13.8,42.2,12,40,12z"
+              ></path>
 
-            {/* Folder body */}
-            <path
-              fill={colorScheme.iconBody}
-              d="M40,12H8c-2.2,0-4,1.8-4,4v20c0,2.2,1.8,4,4,4h32c2.2,0,4-1.8,4-4V16C44,13.8,42.2,12,40,12z"
-            ></path>
-          </svg>
-          <Typography
-            variant="h4"
-            className="pt-1 text-secondary-foreground line-clamp-1 dark:text-muted"
-          >
-            {title}
-          </Typography>
-          <Typography className="text-muted-foreground dark:text-gray-500">
-            {format(new Date(date), "MMM yy")}
-          </Typography>
-        </CardContent>
-      </Card>
+              {/* Folder body */}
+              <path
+                fill={colorScheme.iconBody}
+                d="M40,12H8c-2.2,0-4,1.8-4,4v20c0,2.2,1.8,4,4,4h32c2.2,0,4-1.8,4-4V16C44,13.8,42.2,12,40,12z"
+              ></path>
+            </svg>
+            <Typography
+              variant="h4"
+              className="text-secondary-foreground dark:text-muted line-clamp-1 pt-1"
+            >
+              {title}
+            </Typography>
+            <Typography className="text-muted-foreground dark:text-gray-500">
+              {format(new Date(date), "MMM yy")}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Link>
     </ContextMenuComp>
   );
 };

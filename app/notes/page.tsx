@@ -40,7 +40,7 @@ export default function NotesPage() {
     <main className="wrapper py-vertical">
       <SectionWithBreadcrumb renderBreadcrumb={renderBreadcrumb}>
         <Typography variant="h3">Notes</Typography>
-        <ButtonWithNavigator />
+        <ButtonWithNavigator createButtonType="note" />
 
         <section className="space-y-5">
           <div className="space-y-5">
