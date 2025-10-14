@@ -17,6 +17,7 @@ const eslintConfig = [
       "jsx-a11y/alt-text": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "react/jsx-no-undef": "off",
+      "@typescript-eslint/ban-ts-comment": "off",
     },
   },
 ];

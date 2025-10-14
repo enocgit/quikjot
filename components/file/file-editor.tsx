@@ -19,7 +19,7 @@ export function FileEditor() {
   return (
     <Card className="mx-auto w-full max-w-3xl">
       <CardHeader>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
           <Input
             placeholder="Note title"
             className="border-none text-2xl font-bold shadow-none focus-visible:ring-0"

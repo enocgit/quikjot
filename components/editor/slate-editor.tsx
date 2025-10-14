@@ -50,11 +50,8 @@ const HOTKEYS: Record<string, keyof Omit<CustomText, "text">> = {
   "mod+`": "code",
 };
 
-const LIST_TYPES: Array<CustomElement["type"]> = [
-  "numbered-list",
-  "bulleted-list",
-];
-const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
+const LIST_TYPES = ["numbered-list", "bulleted-list"] as const;
+const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"] as const;
 
 export type AlignType = (typeof TEXT_ALIGN_TYPES)[number];
 export type ListType = Extract<
@@ -62,6 +59,15 @@ export type ListType = Extract<
   "bulleted-list" | "numbered-list"
 >;
 export type CustomElementFormat = CustomElementType | AlignType;
+
+// Type guards to help TS narrow discriminated unions
+const isAlignFormat = (format: CustomElementFormat): format is AlignType => {
+  return (TEXT_ALIGN_TYPES as readonly string[]).includes(format as string);
+};
+
+const isListFormat = (format: CustomElementFormat): format is ListType => {
+  return format === "numbered-list" || format === "bulleted-list";
+};
 
 const SlateEditor = () => {
   const renderElement = useCallback(
@@ -76,7 +82,7 @@ const SlateEditor = () => {
 
   return (
     <Slate editor={editor} initialValue={initialValue}>
-      <Toolbar>
+      <Toolbar className="flex-wrap">
         <MarkButton format="bold" icon={<Bold className="size-4" />} />
         <MarkButton format="italic" icon={<Italic className="size-4" />} />
         <MarkButton
@@ -136,32 +142,43 @@ const toggleBlock = (editor: CustomEditor, format: CustomElementFormat) => {
   const isActive = isBlockActive(
     editor,
     format,
-    TEXT_ALIGN_TYPES.includes(format) ? "align" : "type",
+    isAlignFormat(format) ? "align" : "type",
   );
-  const isList = LIST_TYPES.includes(format);
+  const isList = isListFormat(format);
 
   Transforms.unwrapNodes(editor, {
     match: (n) =>
       !Editor.isEditor(n) &&
       SlateElement.isElement(n) &&
-      LIST_TYPES.includes((n as CustomElement).type) &&
-      !TEXT_ALIGN_TYPES.includes(format),
+      (LIST_TYPES as readonly string[]).includes(
+        (n as CustomElement).type as string,
+      ) &&
+      !isAlignFormat(format),
     split: true,
   });
 
   let newProperties: Partial<SlateElement>;
-  if (TEXT_ALIGN_TYPES.includes(format)) {
-    newProperties = { align: isActive ? undefined : format };
+  if (isAlignFormat(format)) {
+    newProperties = {
+      align: isActive ? undefined : format,
+    } as Partial<SlateElement>;
   } else {
     newProperties = {
-      type: isActive ? "paragraph" : isList ? "list-item" : format,
+      type: isActive
+        ? "paragraph"
+        : isList
+          ? "list-item"
+          : (format as CustomElementType),
     };
   }
   Transforms.setNodes<SlateElement>(editor, newProperties);
 
   if (!isActive && isList) {
-    const block = { type: format, children: [] };
-    Transforms.wrapNodes(editor, block);
+    const block = { type: format, children: [] } as {
+      type: ListType;
+      children: Descendant[];
+    };
+    Transforms.wrapNodes(editor, block as unknown as SlateElement);
   }
 };
 
@@ -191,9 +208,13 @@ const isBlockActive = (
       match: (n) => {
         if (Editor.isEditor(n) || !SlateElement.isElement(n)) return false;
         const element = n as CustomElement;
-        return blockType === "align"
-          ? element.align === format
-          : element.type === format;
+        if (blockType === "align") {
+          return (
+            "align" in element &&
+            (element as any).align === (format as AlignType)
+          );
+        }
+        return element.type === (format as CustomElementType);
       },
     }),
   );
@@ -286,7 +307,7 @@ const BlockButton = ({
         "bg-muted": isBlockActive(
           editor,
           format,
-          TEXT_ALIGN_TYPES.includes(format) ? "align" : "type",
+          isAlignFormat(format) ? "align" : "type",
         ),
       })}
       onMouseDown={(event) => {
