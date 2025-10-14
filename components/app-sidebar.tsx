@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Calendar, Trash2 } from "lucide-react";
+import { Plus, Calendar, Trash2, FileText } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -16,14 +16,17 @@ const AppSidebar: React.FC = () => {
   return (
     <Sidebar variant="floating">
       <SidebarHeader>
-        <Typography variant="h2" className="font-semibold">
-          Quikjot
-        </Typography>
+        <div className="flex items-center gap-2">
+          <FileText />
+          <Typography variant="h3" className="font-semibold">
+            Quikjot
+          </Typography>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="rounded-full bg-primary hover:bg-primary/90 hover:text-primary-foreground text-primary-foreground size-16 flex items-center justify-center">
+            <SidebarMenuButton className="bg-primary hover:bg-primary/90 hover:text-primary-foreground text-primary-foreground flex size-16 items-center justify-center rounded-full">
               <Plus />
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -39,9 +42,9 @@ const AppSidebar: React.FC = () => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <UpgradeCTA />
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   );
 };

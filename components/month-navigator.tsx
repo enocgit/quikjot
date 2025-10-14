@@ -3,11 +3,18 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Typography } from "./ui/typography";
 import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "./ui/calendar";
 
 interface MonthNavigatorProps {
   month: Date;
   onPrev: () => void;
   onNext: () => void;
+  onDateChange: (date: Date) => void;
   className?: string;
 }
 
@@ -15,6 +22,7 @@ export const MonthNavigator: React.FC<MonthNavigatorProps> = ({
   month,
   onPrev,
   onNext,
+  onDateChange,
   className,
 }) => {
   const monthLabel = month.toLocaleString("default", {
@@ -28,17 +36,30 @@ export const MonthNavigator: React.FC<MonthNavigatorProps> = ({
         size="icon"
         onClick={onPrev}
         aria-label="Previous month"
-        className="w-14 h-9"
       >
         <ChevronLeft className="size-4" />
       </Button>
-      <Typography className="text-muted-foreground">{monthLabel}</Typography>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Typography className="text-muted-foreground cursor-pointer">
+            {monthLabel}
+          </Typography>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0">
+          <Calendar
+            mode="single"
+            captionLayout="dropdown"
+            selected={month}
+            onSelect={(date) => onDateChange(date as Date)}
+            initialFocus
+          />
+        </PopoverContent>
+      </Popover>
       <Button
         variant="secondary"
         size="icon"
         onClick={onNext}
         aria-label="Next month"
-        className="w-14 h-9"
       >
         <ChevronRight className="size-4" />
       </Button>

@@ -11,13 +11,13 @@ export default function SectionWithSidebar({
   sidebar: React.ReactNode;
 }) {
   return (
-    <section className="grid grid-cols-1 2xl:grid-cols-12 gap-10">
-      <div className="2xl:col-span-9 space-y-5">
-        <Typography variant="h3">{title}</Typography>
+    <section className="grid grid-cols-1 gap-10 2xl:grid-cols-12">
+      <div className="space-y-5 2xl:col-span-10">
+        <Typography variant="h4">{title}</Typography>
         {children}
       </div>
-      <div className="2xl:col-span-3">
-        <div className="flex gap-8 items-center justify-end 2xl:flex-col 2xl:items-end">
+      <div className="2xl:col-span-2">
+        <div className="flex items-center justify-end gap-8 2xl:flex-col 2xl:items-end">
           {sidebar}
         </div>
       </div>
