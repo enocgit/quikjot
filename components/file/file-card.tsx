@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
-import { MoreHorizontal, SquarePen } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
+import { MoveFileDialog } from "./move-file-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +54,13 @@ export function DropdownMenuComp({
         ) : (
           <DropdownMenuGroup>
             <DropdownMenuItem inset>Edit</DropdownMenuItem>
+            <MoveFileDialog
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+                  Move
+                </DropdownMenuItem>
+              }
+            />
             <DropdownMenuItem inset>Duplicate</DropdownMenuItem>
             <DropdownMenuItem inset>Share</DropdownMenuItem>
             <DropdownMenuItem inset variant="destructive">

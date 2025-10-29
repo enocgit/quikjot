@@ -34,6 +34,18 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import { Input } from "../ui/input";
 
 interface FolderCardProps {
   title: string;
@@ -41,6 +53,31 @@ interface FolderCardProps {
   colorIndex?: number; // Optional: specify color, otherwise random
   fullWidth?: boolean;
   isTrash?: boolean;
+}
+
+function RenameFolderDialog({ trigger }: { trigger: React.ReactNode }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Rename folder</DialogTitle>
+          <DialogDescription>
+            Enter a new name for your folder.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <Input id="name" placeholder="Folder name" />
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button type="submit">Rename</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export function DropdownMenuComp({
@@ -56,22 +93,43 @@ export function DropdownMenuComp({
       <DropdownMenuContent className="w-56" align="start">
         {isTrash ? (
           <DropdownMenuGroup>
-            <DropdownMenuItem inset>Restore</DropdownMenuItem>
-            <DropdownMenuItem inset variant="destructive">
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+              Restore
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => e.preventDefault()}
+              inset
+              variant="destructive"
+            >
               Delete Permanently
             </DropdownMenuItem>
           </DropdownMenuGroup>
         ) : (
           <>
             <DropdownMenuGroup>
-              <DropdownMenuItem inset>Rename</DropdownMenuItem>
-              <DropdownMenuItem inset>Move</DropdownMenuItem>
-              <DropdownMenuItem inset>Duplicate</DropdownMenuItem>
-              <DropdownMenuItem inset>Share</DropdownMenuItem>
+              <RenameFolderDialog
+                trigger={
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+                    Rename
+                  </DropdownMenuItem>
+                }
+              />
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+                Move
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+                Duplicate
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+                Share
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger inset>
+              <DropdownMenuSubTrigger
+                onSelect={(e) => e.preventDefault()}
+                inset
+              >
                 Change Color
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
@@ -91,7 +149,11 @@ export function DropdownMenuComp({
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuGroup>
-              <DropdownMenuItem inset variant="destructive">
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                inset
+                variant="destructive"
+              >
                 Move to Trash
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -152,8 +214,6 @@ export function ContextMenuComp({
   );
 }
 
-import Link from "next/link";
-
 const FolderCard: React.FC<FolderCardProps> = ({
   title,
   date,
@@ -171,58 +231,62 @@ const FolderCard: React.FC<FolderCardProps> = ({
 
   return (
     <ContextMenuComp isTrash={isTrash}>
-      <Link href={`/folders/${slug}`}>
-        <Card
-          className={cn(
-            "relative h-52 w-full cursor-pointer rounded-lg p-0 xl:w-52 xl:min-w-52",
-            fullWidth && "w-full min-w-full xl:w-full xl:min-w-full",
-          )}
-          style={{ background: colorScheme.bg }}
-          role="button"
-        >
-          <CardContent className="space-y-3 p-5">
-            <DropdownMenuComp isTrash={isTrash}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="dark:text-background absolute top-5 right-5"
+      <div className="relative">
+        <Link href={`/folders/${slug}`}>
+          <Card
+            className={cn(
+              "relative h-52 w-full cursor-pointer rounded-lg p-0 xl:w-52 xl:min-w-52",
+              fullWidth && "w-full min-w-full xl:w-full xl:min-w-full",
+            )}
+            style={{ background: colorScheme.bg }}
+            role="button"
+          >
+            <CardContent className="space-y-3 p-5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="87"
+                height="87"
+                viewBox="0 0 48 48"
+                className="relative -left-2"
               >
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuComp>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              x="0px"
-              y="0px"
-              width="87"
-              height="87"
-              viewBox="0 0 48 48"
-              className="relative -left-2"
-            >
-              {/* Folder top */}
-              <path
-                fill={colorScheme.iconTop}
-                d="M40,12H22l-4-4H8c-2.2,0-4,1.8-4,4v8h40v-4C44,13.8,42.2,12,40,12z"
-              ></path>
+                {/* Folder top */}
+                <path
+                  fill={colorScheme.iconTop}
+                  d="M40,12H22l-4-4H8c-2.2,0-4,1.8-4,4v8h40v-4C44,13.8,42.2,12,40,12z"
+                ></path>
 
-              {/* Folder body */}
-              <path
-                fill={colorScheme.iconBody}
-                d="M40,12H8c-2.2,0-4,1.8-4,4v20c0,2.2,1.8,4,4,4h32c2.2,0,4-1.8,4-4V16C44,13.8,42.2,12,40,12z"
-              ></path>
-            </svg>
-            <Typography
-              variant="h4"
-              className="text-secondary-foreground dark:text-muted line-clamp-1 pt-1"
+                {/* Folder body */}
+                <path
+                  fill={colorScheme.iconBody}
+                  d="M40,12H8c-2.2,0-4,1.8-4,4v20c0,2.2,1.8,4,4,4h32c2.2,0,4-1.8,4-4V16C44,13.8,42.2,12,40,12z"
+                ></path>
+              </svg>
+              <Typography
+                variant="h4"
+                className="text-secondary-foreground dark:text-muted line-clamp-1 pt-1"
+              >
+                {title}
+              </Typography>
+              <Typography className="text-muted-foreground dark:text-gray-500">
+                {format(new Date(date), "MMM yy")}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Link>
+        <div className="absolute top-5 right-5">
+          <DropdownMenuComp isTrash={isTrash}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="dark:text-background"
             >
-              {title}
-            </Typography>
-            <Typography className="text-muted-foreground dark:text-gray-500">
-              {format(new Date(date), "MMM yy")}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Link>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuComp>
+        </div>
+      </div>
     </ContextMenuComp>
   );
 };
