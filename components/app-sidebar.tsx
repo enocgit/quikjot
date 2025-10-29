@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Plus, Calendar, Trash2, FileText } from "lucide-react";
 import {
   Sidebar,
@@ -36,9 +37,11 @@ const AppSidebar: React.FC = () => {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton>
-              <Trash2 />
-            </SidebarMenuButton>
+            <Link href="/trash">
+              <SidebarMenuButton>
+                <Trash2 />
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>

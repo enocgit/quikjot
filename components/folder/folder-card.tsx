@@ -40,79 +40,114 @@ interface FolderCardProps {
   date: string;
   colorIndex?: number; // Optional: specify color, otherwise random
   fullWidth?: boolean;
+  isTrash?: boolean;
 }
 
-export function DropdownMenuComp({ children }: { children: React.ReactNode }) {
+export function DropdownMenuComp({
+  children,
+  isTrash,
+}: {
+  children: React.ReactNode;
+  isTrash?: boolean;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
-        <DropdownMenuGroup>
-          <DropdownMenuItem inset>Rename</DropdownMenuItem>
-          <DropdownMenuItem inset>Move</DropdownMenuItem>
-          <DropdownMenuItem inset>Duplicate</DropdownMenuItem>
-          <DropdownMenuItem inset>Share</DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger inset>Change Color</DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuRadioGroup value="Green">
-                {FOLDER_COLORS.map((color) => (
-                  <DropdownMenuRadioItem
-                    key={color.friendlyName}
-                    value={color.friendlyName}
-                    style={{ color: color.iconTop }}
-                  >
-                    {color.friendlyName}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
-        <DropdownMenuGroup>
-          <DropdownMenuItem inset variant="destructive">
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
+        {isTrash ? (
+          <DropdownMenuGroup>
+            <DropdownMenuItem inset>Restore</DropdownMenuItem>
+            <DropdownMenuItem inset variant="destructive">
+              Delete Permanently
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        ) : (
+          <>
+            <DropdownMenuGroup>
+              <DropdownMenuItem inset>Rename</DropdownMenuItem>
+              <DropdownMenuItem inset>Move</DropdownMenuItem>
+              <DropdownMenuItem inset>Duplicate</DropdownMenuItem>
+              <DropdownMenuItem inset>Share</DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger inset>
+                Change Color
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  <DropdownMenuRadioGroup value="Green">
+                    {FOLDER_COLORS.map((color) => (
+                      <DropdownMenuRadioItem
+                        key={color.friendlyName}
+                        value={color.friendlyName}
+                        style={{ color: color.iconTop }}
+                      >
+                        {color.friendlyName}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+            <DropdownMenuGroup>
+              <DropdownMenuItem inset variant="destructive">
+                Move to Trash
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-export function ContextMenuComp({ children }: { children: React.ReactNode }) {
+export function ContextMenuComp({
+  children,
+  isTrash,
+}: {
+  children: React.ReactNode;
+  isTrash?: boolean;
+}) {
   return (
     <ContextMenu>
       <ContextMenuTrigger className="">{children}</ContextMenuTrigger>
-      <ContextMenuContent className="w-52">
-        <ContextMenuItem inset>Rename</ContextMenuItem>
-        <ContextMenuItem inset>Move</ContextMenuItem>
-        <ContextMenuItem inset>Duplicate</ContextMenuItem>
-        <ContextMenuItem inset>Share</ContextMenuItem>
-        <ContextMenuSeparator />
-        <ContextMenuSub>
-          <ContextMenuSubTrigger inset>Change Color</ContextMenuSubTrigger>
-          <ContextMenuSubContent>
-            <ContextMenuRadioGroup value="Green">
-              {FOLDER_COLORS.map((color) => (
-                <ContextMenuRadioItem
-                  key={color.friendlyName}
-                  value={color.friendlyName}
-                  style={{ color: color.iconTop }}
-                >
-                  {color.friendlyName}
-                </ContextMenuRadioItem>
-              ))}
-            </ContextMenuRadioGroup>
-          </ContextMenuSubContent>
-        </ContextMenuSub>
-        <ContextMenuSeparator />
-        <ContextMenuItem inset variant="destructive">
-          Delete
-        </ContextMenuItem>
-      </ContextMenuContent>
+      {isTrash ? (
+        <ContextMenuContent className="w-52">
+          <ContextMenuItem inset>Restore</ContextMenuItem>
+          <ContextMenuItem inset variant="destructive">
+            Delete Permanently
+          </ContextMenuItem>
+        </ContextMenuContent>
+      ) : (
+        <ContextMenuContent className="w-52">
+          <ContextMenuItem inset>Rename</ContextMenuItem>
+          <ContextMenuItem inset>Move</ContextMenuItem>
+          <ContextMenuItem inset>Duplicate</ContextMenuItem>
+          <ContextMenuItem inset>Share</ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuSub>
+            <ContextMenuSubTrigger inset>Change Color</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              <ContextMenuRadioGroup value="Green">
+                {FOLDER_COLORS.map((color) => (
+                  <ContextMenuRadioItem
+                    key={color.friendlyName}
+                    value={color.friendlyName}
+                    style={{ color: color.iconTop }}
+                  >
+                    {color.friendlyName}
+                  </ContextMenuRadioItem>
+                ))}
+              </ContextMenuRadioGroup>
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+          <ContextMenuSeparator />
+          <ContextMenuItem inset variant="destructive">
+            Move to Trash
+          </ContextMenuItem>
+        </ContextMenuContent>
+      )}
     </ContextMenu>
   );
 }
@@ -124,6 +159,7 @@ const FolderCard: React.FC<FolderCardProps> = ({
   date,
   colorIndex,
   fullWidth = false,
+  isTrash = false,
 }) => {
   // Pick a color scheme
   const colorScheme =
@@ -134,7 +170,7 @@ const FolderCard: React.FC<FolderCardProps> = ({
   const slug = title.toLowerCase().replace(/\s+/g, "-");
 
   return (
-    <ContextMenuComp>
+    <ContextMenuComp isTrash={isTrash}>
       <Link href={`/folders/${slug}`}>
         <Card
           className={cn(
@@ -145,7 +181,7 @@ const FolderCard: React.FC<FolderCardProps> = ({
           role="button"
         >
           <CardContent className="space-y-3 p-5">
-            <DropdownMenuComp>
+            <DropdownMenuComp isTrash={isTrash}>
               <Button
                 variant="ghost"
                 size="icon"
