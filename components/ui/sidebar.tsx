@@ -3,7 +3,13 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { VariantProps, cva } from "class-variance-authority";
-import { ArrowLeft, ArrowRight, PanelLeftIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  PanelLeftIcon,
+} from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -267,7 +273,7 @@ function SidebarTrigger({
       variant="outline"
       size="icon"
       className={cn(
-        "h-12 w-7 -translate-x-3 rounded-l-none",
+        "h-12 w-7 -translate-x-2 rounded-l-none",
         { "w-4.5 -translate-x-2": open },
         className,
       )}
@@ -277,7 +283,7 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      {open ? <ArrowLeft /> : <ArrowRight />}
+      {open ? <ChevronLeft /> : <ChevronRight />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

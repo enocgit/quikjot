@@ -4,8 +4,11 @@ import React from "react";
 import { Search } from "lucide-react";
 import { Typography } from "./ui/typography";
 import { Input } from "./ui/input";
-import ModeToggle from "./ui/mode-toggle";
 import Menu from "./ui/menu";
+import dynamic from "next/dynamic";
+const ModeToggle = dynamic(() => import("./ui/mode-toggle"), {
+  ssr: false,
+});
 
 const Header: React.FC = () => {
   return (

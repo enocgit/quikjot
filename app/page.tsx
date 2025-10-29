@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import FolderSection from "./_components/folder-section";
 import NoteSection from "./_components/note-section";

@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import SectionWithBreadcrumb from "@/components/section-with-breadcrumb";
 import {
@@ -10,8 +12,11 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { Typography } from "@/components/ui/typography";
-import FileCard from "@/components/file/file-card";
 import ButtonWithNavigator from "@/components/button-with-navigator";
+import dynamic from "next/dynamic";
+const FileCard = dynamic(() => import("@/components/file/file-card"), {
+  ssr: false,
+});
 
 function BreadcrumbComp() {
   return (

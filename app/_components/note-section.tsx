@@ -5,9 +5,12 @@ import SectionWithSidebar from "./section-with-sidebar";
 import { MonthNavigator } from "@/components/month-navigator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import FileCard from "@/components/file/file-card";
 import LargeCreateButton from "@/components/shared/large-create-button";
 import { CreateNoteDialog } from "@/components/note/create-note-dialog";
+import dynamic from "next/dynamic";
+const FileCard = dynamic(() => import("@/components/file/file-card"), {
+  ssr: false,
+});
 
 export default function NoteSection() {
   const [month, setMonth] = React.useState<Date>(new Date());

@@ -11,7 +11,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { FileEditor } from "@/components/file/file-editor";
+import dynamic from "next/dynamic";
+const FileEditor = dynamic(
+  () => import("@/components/file/file-editor").then((mod) => mod.FileEditor),
+  {
+    ssr: false,
+  },
+);
 
 export function CreateNoteDialog({ trigger }: { trigger: React.ReactNode }) {
   return (
