@@ -20,7 +20,7 @@ export function CreateFolderDialog({ trigger }: { trigger: React.ReactNode }) {
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Create new folder</DialogTitle>
           <DialogDescription>
@@ -30,7 +30,7 @@ export function CreateFolderDialog({ trigger }: { trigger: React.ReactNode }) {
         <div className="grid gap-4 py-4">
           <Input id="name" placeholder="Folder name" />
           <fieldset className="space-y-4">
-            <legend className="text-sm font-medium leading-none text-foreground">
+            <legend className="text-foreground text-sm leading-none font-medium">
               Choose a color
             </legend>
             <RadioGroup className="flex gap-1.5" defaultValue="blue">

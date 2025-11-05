@@ -1,26 +1,36 @@
 import { Typography } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 import React from "react";
 
 export default function SectionWithSidebar({
   title,
   children,
   sidebar,
+  seeAllLink,
 }: {
   title: string;
   children: React.ReactNode;
-  sidebar: React.ReactNode;
+  sidebar?: React.ReactNode;
+  seeAllLink?: React.ReactNode;
 }) {
   return (
-    <section className="grid grid-cols-1 gap-10 2xl:grid-cols-12">
+    <section
+      className={cn("grid grid-cols-1 gap-10", sidebar && "2xl:grid-cols-12")}
+    >
       <div className="space-y-5 2xl:col-span-10">
-        <Typography variant="h4">{title}</Typography>
+        <div className="flex items-center justify-between">
+          <Typography variant="h4">{title}</Typography>
+          {seeAllLink}
+        </div>
         {children}
       </div>
-      <div className="2xl:col-span-2">
-        <div className="flex items-center justify-end gap-8 2xl:flex-col 2xl:items-end">
-          {sidebar}
+      {sidebar && (
+        <div className="2xl:col-span-2">
+          <div className="flex items-center justify-end gap-8 2xl:flex-col 2xl:items-end">
+            {sidebar}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

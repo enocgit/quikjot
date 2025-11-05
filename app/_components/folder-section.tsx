@@ -1,50 +1,55 @@
 "use client";
 import React from "react";
-import SectionWithSidebar from "./section-with-sidebar";
-import { MonthNavigator } from "@/components/month-navigator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
-import FolderCard from "@/components/folder/folder-card";
-import LargeCreateButton from "@/components/shared/large-create-button";
-import { CreateFolderDialog } from "@/components/folder/create-folder-dialog";
+import dynamic from "next/dynamic";
+import { Folder } from "lucide-react";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import SectionWithSidebar from "./section-with-sidebar";
+import { Button } from "@/components/ui/button";
+
+const CreateFolderDialog = dynamic(
+  () =>
+    import("@/components/folder/create-folder-dialog").then(
+      (mod) => mod.CreateFolderDialog,
+    ),
+  {
+    ssr: false,
+  },
+);
+
+const FolderCard = dynamic(() => import("@/components/folder/folder-card"), {
+  ssr: false,
+});
+
+const folders = [
+  { id: "1", title: "Personal", date: "2025-01-01" },
+  { id: "2", title: "Work", date: "2025-01-01" },
+  { id: "3", title: "Travel", date: "2025-01-01" },
+  {
+    id: "4",
+    title: "Recipes. This is a longer title to test the length of the title.",
+    date: "2025-01-01",
+  },
+];
 
 export default function FolderSection() {
-  const [month, setMonth] = React.useState<Date>(new Date());
-
-  const handlePrevMonth = () => {
-    setMonth((prev) => {
-      const d = new Date(prev);
-      d.setMonth(d.getMonth() - 1);
-      return d;
-    });
-  };
-  const handleNextMonth = () => {
-    setMonth((prev) => {
-      const d = new Date(prev);
-      d.setMonth(d.getMonth() + 1);
-      return d;
-    });
-  };
-
-  const handleDateChange = (date: Date) => {
-    setMonth(date);
-  };
+  const hasFolders = folders.length > 0;
 
   return (
     <SectionWithSidebar
       title="Recent Folders"
-      sidebar={
-        <>
-          <MonthNavigator
-            month={month}
-            onPrev={handlePrevMonth}
-            onNext={handleNextMonth}
-            onDateChange={handleDateChange}
-          />
-          <Link href="/folders" className="text-secondary-foreground w-fit">
-            See All
-          </Link>
-        </>
+      seeAllLink={
+        <Link href="/folders" className="text-secondary-foreground w-fit">
+          See All
+        </Link>
       }
     >
       <Tabs defaultValue="all">
@@ -55,34 +60,38 @@ export default function FolderSection() {
           <TabsTrigger value="this-month">This Month</TabsTrigger>
         </TabsList>
         <TabsContent value="all">
-          <section className="mt-5 gap-3 xl:flex xl:flex-row">
-            <div className="hidden-scrollbar xxs:grid-cols-2 order-2 grid grid-cols-1 gap-3 overflow-x-auto min-[520px]:grid-cols-3 md:grid-cols-(--file-grid-cols) xl:order-1 xl:flex">
-              <div className="xl:hidden">
-                <CreateFolderDialog
-                  trigger={
-                    <LargeCreateButton
-                      label="New Folder"
-                      className="min-h-52"
-                    />
-                  }
-                />
+          {hasFolders ? (
+            <section className="mt-5 gap-3 xl:flex xl:flex-row">
+              <div className="hidden-scrollbar xxs:grid-cols-2 grid grid-cols-1 gap-3 overflow-x-auto min-[520px]:grid-cols-3 md:grid-cols-(--file-grid-cols) xl:flex">
+                {folders.map((folder, index) => (
+                  <FolderCard
+                    key={index}
+                    title={folder.title}
+                    date={folder.date}
+                  />
+                ))}
               </div>
-              <FolderCard
-                title="Folder 1 Genesis Above All"
-                date="2021-01-01"
-              />
-              <FolderCard title="Folder 2" date="2021-01-01" />
-              <FolderCard title="Folder 3" date="2021-01-01" />
-              <FolderCard title="Folder 4" date="2021-01-01" />
+            </section>
+          ) : (
+            <div className="flex h-full min-h-52 items-center justify-center">
+              <Empty>
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <Folder />
+                  </EmptyMedia>
+                  <EmptyTitle>No Folders Yet</EmptyTitle>
+                  <EmptyDescription>
+                    Create your first folder to get started.
+                  </EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                  <CreateFolderDialog
+                    trigger={<Button>Create Folder</Button>}
+                  />
+                </EmptyContent>
+              </Empty>
             </div>
-            <div className="order-1 hidden xl:order-2 xl:block">
-              <CreateFolderDialog
-                trigger={
-                  <LargeCreateButton label="New Folder" className="min-h-52" />
-                }
-              />
-            </div>
-          </section>
+          )}
         </TabsContent>
       </Tabs>
     </SectionWithSidebar>
