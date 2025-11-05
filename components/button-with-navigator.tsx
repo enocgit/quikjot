@@ -2,9 +2,22 @@
 import React from "react";
 import { MonthNavigator } from "@/components/month-navigator";
 import LargeCreateButton from "@/components/shared/large-create-button";
-import { CreateFolderDialog } from "./folder/create-folder-dialog";
-import { CreateNoteDialog } from "./note/create-note-dialog";
-
+import dynamic from "next/dynamic";
+const CreateFolderDialog = dynamic(
+  () =>
+    import("./folder/create-folder-dialog").then(
+      (mod) => mod.CreateFolderDialog,
+    ),
+  {
+    ssr: false,
+  },
+);
+const CreateNoteDialog = dynamic(
+  () => import("./note/create-note-dialog").then((mod) => mod.CreateNoteDialog),
+  {
+    ssr: false,
+  },
+);
 export default function ButtonWithNavigator({
   createButtonType,
 }: {

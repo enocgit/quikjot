@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { Search } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 import { Typography } from "./ui/typography";
-import { Input } from "./ui/input";
 import Menu from "./ui/menu";
 import dynamic from "next/dynamic";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input.group";
+import { Kbd } from "./ui/kbd";
 const ModeToggle = dynamic(() => import("./ui/mode-toggle"), {
   ssr: false,
 });
@@ -16,8 +17,19 @@ const Header: React.FC = () => {
       <Typography variant="h3" className="font-semibold">
         My Notes
       </Typography>
-
-      <div className="flex flex-1 justify-center">
+      <div className="bg-muted/50 flex w-full max-w-md flex-col gap-6">
+        <InputGroup>
+          <InputGroupInput placeholder="Search..." />
+          <InputGroupAddon>
+            <SearchIcon />
+          </InputGroupAddon>
+          <InputGroupAddon align="inline-end">
+            <Kbd>⌘</Kbd>
+            <Kbd>K</Kbd>
+          </InputGroupAddon>
+        </InputGroup>
+      </div>
+      {/* <div className="flex flex-1 justify-center">
         <div className="relative w-full max-w-md">
           <Input
             type="text"
@@ -28,7 +40,7 @@ const Header: React.FC = () => {
             <Search size={18} />
           </span>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-4">
         {/* Dark/Light Mode Toggle */}

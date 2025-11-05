@@ -5,11 +5,19 @@ import { MonthNavigator } from "@/components/month-navigator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import LargeCreateButton from "@/components/shared/large-create-button";
-import { CreateFolderDialog } from "@/components/folder/create-folder-dialog";
 import dynamic from "next/dynamic";
 const FolderCard = dynamic(() => import("@/components/folder/folder-card"), {
   ssr: false,
 });
+const CreateFolderDialog = dynamic(
+  () =>
+    import("@/components/folder/create-folder-dialog").then(
+      (mod) => mod.CreateFolderDialog,
+    ),
+  {
+    ssr: false,
+  },
+);
 
 export default function FolderSection() {
   const [month, setMonth] = React.useState<Date>(new Date());

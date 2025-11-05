@@ -14,6 +14,7 @@ import {
 import SlateEditor from "@/components/editor/slate-editor";
 import { Button } from "../ui/button";
 import { Folder } from "lucide-react";
+import { SelectFolderComboBox } from "./select-folder-combobox";
 
 export function FileEditor() {
   return (
@@ -24,7 +25,8 @@ export function FileEditor() {
             placeholder="Note title"
             className="border-none text-2xl font-bold shadow-none focus-visible:ring-0"
           />
-          <DropdownMenu>
+          <SelectFolderComboBox />
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="flex items-center gap-2">
                 <Folder className="size-4" />
@@ -34,12 +36,11 @@ export function FileEditor() {
             <DropdownMenuContent>
               <DropdownMenuLabel>My Folders</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {/* Placeholder for folder list */}
               <DropdownMenuItem>Personal</DropdownMenuItem>
               <DropdownMenuItem>Work</DropdownMenuItem>
               <DropdownMenuItem>Ideas</DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </CardHeader>
       <CardContent>

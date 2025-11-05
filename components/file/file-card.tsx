@@ -2,7 +2,6 @@
 
 import React from "react";
 import { MoreHorizontal } from "lucide-react";
-import { MoveFileDialog } from "./move-file-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +22,7 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import { FILE_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { MoveFolderDialog } from "../folder/move-folder-dialog";
 
 interface FileCardProps {
   date: string;
@@ -54,7 +54,7 @@ export function DropdownMenuComp({
         ) : (
           <DropdownMenuGroup>
             <DropdownMenuItem inset>Edit</DropdownMenuItem>
-            <MoveFileDialog
+            <MoveFolderDialog
               trigger={
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
                   Move
@@ -94,6 +94,13 @@ export function ContextMenuComp({
         ) : (
           <ContextMenuGroup>
             <ContextMenuItem inset>Edit</ContextMenuItem>
+            <MoveFolderDialog
+              trigger={
+                <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
+                  Move
+                </ContextMenuItem>
+              }
+            />
             <ContextMenuItem inset>Duplicate</ContextMenuItem>
             <ContextMenuItem inset>Share</ContextMenuItem>
             <ContextMenuItem inset variant="destructive">

@@ -35,17 +35,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
-import { Input } from "../ui/input";
+import { MoveFolderDialog } from "./move-folder-dialog";
+import { RenameFolderDialog } from "./rename-folder-dialog";
 
 interface FolderCardProps {
   title: string;
@@ -53,31 +44,6 @@ interface FolderCardProps {
   colorIndex?: number; // Optional: specify color, otherwise random
   fullWidth?: boolean;
   isTrash?: boolean;
-}
-
-function RenameFolderDialog({ trigger }: { trigger: React.ReactNode }) {
-  return (
-    <Dialog>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Rename folder</DialogTitle>
-          <DialogDescription>
-            Enter a new name for your folder.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <Input id="name" placeholder="Folder name" />
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <Button type="submit">Rename</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
 }
 
 export function DropdownMenuComp({
@@ -114,9 +80,13 @@ export function DropdownMenuComp({
                   </DropdownMenuItem>
                 }
               />
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
-                Move
-              </DropdownMenuItem>
+              <MoveFolderDialog
+                trigger={
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+                    Move
+                  </DropdownMenuItem>
+                }
+              />
               <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
                 Duplicate
               </DropdownMenuItem>
@@ -184,7 +154,13 @@ export function ContextMenuComp({
       ) : (
         <ContextMenuContent className="w-52">
           <ContextMenuItem inset>Rename</ContextMenuItem>
-          <ContextMenuItem inset>Move</ContextMenuItem>
+          <MoveFolderDialog
+            trigger={
+              <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
+                Move
+              </ContextMenuItem>
+            }
+          />
           <ContextMenuItem inset>Duplicate</ContextMenuItem>
           <ContextMenuItem inset>Share</ContextMenuItem>
           <ContextMenuSeparator />

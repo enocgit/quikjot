@@ -6,11 +6,19 @@ import { MonthNavigator } from "@/components/month-navigator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import LargeCreateButton from "@/components/shared/large-create-button";
-import { CreateNoteDialog } from "@/components/note/create-note-dialog";
 import dynamic from "next/dynamic";
 const FileCard = dynamic(() => import("@/components/file/file-card"), {
   ssr: false,
 });
+const CreateNoteDialog = dynamic(
+  () =>
+    import("@/components/note/create-note-dialog").then(
+      (mod) => mod.CreateNoteDialog,
+    ),
+  {
+    ssr: false,
+  },
+);
 
 export default function NoteSection() {
   const [month, setMonth] = React.useState<Date>(new Date());
