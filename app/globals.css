@@ -118,7 +118,7 @@
   --tracking-normal: 0em;
   --spacing: 0.25rem;
 
-  --file-grid-cols: repeat(auto-fill, minmax(208px, 1fr));
+  --file-grid-cols: repeat(auto-fill, minmax(180px, 1fr));
 }
 
 .dark {
@@ -197,7 +197,7 @@
   }
 
   .file-grid {
-    @apply xxs:grid-cols-2 xs:grid-cols-(--file-grid-cols) grid grid-cols-1 gap-3;
+    @apply xxs:grid-cols-3 grid grid-cols-1 gap-3 @xs:grid-cols-(--file-grid-cols);
   }
 
   /* Hide scrollbar for Chrome, Safari and Opera */

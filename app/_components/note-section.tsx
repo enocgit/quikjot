@@ -64,7 +64,10 @@ export default function NoteSection() {
     <SectionWithSidebar
       title="My Notes"
       seeAllLink={
-        <Link href="/notes" className="text-secondary-foreground w-fit">
+        <Link
+          href="/notes"
+          className="text-secondary-foreground w-fit text-sm md:text-base"
+        >
           See All
         </Link>
       }
@@ -79,7 +82,7 @@ export default function NoteSection() {
         <TabsContent value="all">
           {hasNotes ? (
             <section className="mt-5 gap-3 xl:flex xl:flex-row">
-              <div className="hidden-scrollbar xxs:grid-cols-2 grid grid-cols-1 gap-3 overflow-x-auto min-[520px]:grid-cols-3 md:grid-cols-(--file-grid-cols) xl:flex">
+              <div className="hidden-scrollbar grid grid-cols-1 gap-3 overflow-x-auto min-[280px]:grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-(--file-grid-cols) xl:flex">
                 {notes.map((note, index) => (
                   <FileCard
                     key={index}

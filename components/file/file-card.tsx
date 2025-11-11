@@ -23,6 +23,7 @@ import { FILE_COLORS } from "@/lib/constants";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { MoveFolderDialog } from "../folder/move-folder-dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FileCardProps {
   date: string;
@@ -33,7 +34,7 @@ interface FileCardProps {
   isTrash?: boolean;
 }
 
-export function DropdownMenuComp({
+function DropdownMenuComp({
   children,
   isTrash,
 }: {
@@ -73,43 +74,50 @@ export function DropdownMenuComp({
   );
 }
 
-export function ContextMenuComp({
+function ContextMenuComp({
   children,
   isTrash,
 }: {
   children: React.ReactNode;
   isTrash?: boolean;
 }) {
+  const isMobile = useIsMobile();
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>{children}</ContextMenuTrigger>
-      <ContextMenuContent className="w-56">
-        {isTrash ? (
-          <ContextMenuGroup>
-            <ContextMenuItem inset>Restore</ContextMenuItem>
-            <ContextMenuItem inset variant="destructive">
-              Delete Permanently
-            </ContextMenuItem>
-          </ContextMenuGroup>
-        ) : (
-          <ContextMenuGroup>
-            <ContextMenuItem inset>Edit</ContextMenuItem>
-            <MoveFolderDialog
-              trigger={
-                <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
-                  Move
+    <>
+      {!isMobile ? (
+        <ContextMenu>
+          <ContextMenuTrigger>{children}</ContextMenuTrigger>
+          <ContextMenuContent className="w-56">
+            {isTrash ? (
+              <ContextMenuGroup>
+                <ContextMenuItem inset>Restore</ContextMenuItem>
+                <ContextMenuItem inset variant="destructive">
+                  Delete Permanently
                 </ContextMenuItem>
-              }
-            />
-            <ContextMenuItem inset>Duplicate</ContextMenuItem>
-            <ContextMenuItem inset>Share</ContextMenuItem>
-            <ContextMenuItem inset variant="destructive">
-              Move to Trash
-            </ContextMenuItem>
-          </ContextMenuGroup>
-        )}
-      </ContextMenuContent>
-    </ContextMenu>
+              </ContextMenuGroup>
+            ) : (
+              <ContextMenuGroup>
+                <ContextMenuItem inset>Edit</ContextMenuItem>
+                <MoveFolderDialog
+                  trigger={
+                    <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
+                      Move
+                    </ContextMenuItem>
+                  }
+                />
+                <ContextMenuItem inset>Duplicate</ContextMenuItem>
+                <ContextMenuItem inset>Share</ContextMenuItem>
+                <ContextMenuItem inset variant="destructive">
+                  Move to Trash
+                </ContextMenuItem>
+              </ContextMenuGroup>
+            )}
+          </ContextMenuContent>
+        </ContextMenu>
+      ) : (
+        <>{children}</>
+      )}
+    </>
   );
 }
 
@@ -131,7 +139,8 @@ const FileCard: React.FC<FileCardProps> = ({
     <ContextMenuComp isTrash={isTrash}>
       <Card
         className={cn(
-          "relative h-60 w-full rounded-lg px-0 pt-3 xl:w-52 xl:min-w-52",
+          "relative h-52 w-full rounded-md px-0 pt-2 xl:w-52 xl:min-w-52",
+          "md:h-60 md:rounded-lg md:px-0 md:pt-3",
           {
             "w-full min-w-full xl:w-full xl:min-w-full": fullWidth,
             "h-52": isTrash,
@@ -139,24 +148,26 @@ const FileCard: React.FC<FileCardProps> = ({
         )}
         style={{ background: colorScheme.bg }}
       >
-        <CardHeader className="text-secondary-foreground dark:text-background grid grid-cols-2 items-center justify-between">
-          <Typography>{format(new Date(date), "MMM yy")}</Typography>
+        <CardHeader className="text-secondary-foreground dark:text-background grid grid-cols-2 items-center justify-between max-md:px-3">
+          <Typography className="max-lg:text-xs">
+            {format(new Date(date), "MMM yy")}
+          </Typography>
           <DropdownMenuComp isTrash={isTrash}>
             <Button variant="ghost" size="icon" className="ml-auto">
               <MoreHorizontal />
             </Button>
           </DropdownMenuComp>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-2 max-md:px-3 md:space-y-3">
           <Typography
             variant="h4"
-            className="text-secondary-foreground dark:text-muted line-clamp-2"
+            className="text-secondary-foreground dark:text-muted line-clamp-1 max-sm:text-base md:line-clamp-2"
           >
             {title}
           </Typography>
           <Typography
             className={cn(
-              "text-muted-foreground line-clamp-3 dark:text-gray-500",
+              "text-muted-foreground line-clamp-3 max-sm:text-sm dark:text-gray-500",
               {
                 "line-clamp-2": isTrash,
               },

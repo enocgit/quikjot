@@ -37,6 +37,7 @@ import {
 import Link from "next/link";
 import { MoveFolderDialog } from "./move-folder-dialog";
 import { RenameFolderDialog } from "./rename-folder-dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FolderCardProps {
   title: string;
@@ -134,59 +135,68 @@ export function DropdownMenuComp({
   );
 }
 
-export function ContextMenuComp({
+function ContextMenuComp({
   children,
   isTrash,
 }: {
   children: React.ReactNode;
   isTrash?: boolean;
 }) {
+  const isMobile = useIsMobile();
   return (
-    <ContextMenu>
-      <ContextMenuTrigger className="">{children}</ContextMenuTrigger>
-      {isTrash ? (
-        <ContextMenuContent className="w-52">
-          <ContextMenuItem inset>Restore</ContextMenuItem>
-          <ContextMenuItem inset variant="destructive">
-            Delete Permanently
-          </ContextMenuItem>
-        </ContextMenuContent>
-      ) : (
-        <ContextMenuContent className="w-52">
-          <ContextMenuItem inset>Rename</ContextMenuItem>
-          <MoveFolderDialog
-            trigger={
-              <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
-                Move
+    <>
+      {!isMobile ? (
+        <ContextMenu>
+          <ContextMenuTrigger className="">{children}</ContextMenuTrigger>
+          {isTrash ? (
+            <ContextMenuContent className="w-52">
+              <ContextMenuItem inset>Restore</ContextMenuItem>
+              <ContextMenuItem inset variant="destructive">
+                Delete Permanently
               </ContextMenuItem>
-            }
-          />
-          <ContextMenuItem inset>Duplicate</ContextMenuItem>
-          <ContextMenuItem inset>Share</ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuSub>
-            <ContextMenuSubTrigger inset>Change Color</ContextMenuSubTrigger>
-            <ContextMenuSubContent>
-              <ContextMenuRadioGroup value="Green">
-                {FOLDER_COLORS.map((color) => (
-                  <ContextMenuRadioItem
-                    key={color.friendlyName}
-                    value={color.friendlyName}
-                    style={{ color: color.iconTop }}
-                  >
-                    {color.friendlyName}
-                  </ContextMenuRadioItem>
-                ))}
-              </ContextMenuRadioGroup>
-            </ContextMenuSubContent>
-          </ContextMenuSub>
-          <ContextMenuSeparator />
-          <ContextMenuItem inset variant="destructive">
-            Move to Trash
-          </ContextMenuItem>
-        </ContextMenuContent>
+            </ContextMenuContent>
+          ) : (
+            <ContextMenuContent className="w-52">
+              <ContextMenuItem inset>Rename</ContextMenuItem>
+              <MoveFolderDialog
+                trigger={
+                  <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
+                    Move
+                  </ContextMenuItem>
+                }
+              />
+              <ContextMenuItem inset>Duplicate</ContextMenuItem>
+              <ContextMenuItem inset>Share</ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuSub>
+                <ContextMenuSubTrigger inset>
+                  Change Color
+                </ContextMenuSubTrigger>
+                <ContextMenuSubContent>
+                  <ContextMenuRadioGroup value="Green">
+                    {FOLDER_COLORS.map((color) => (
+                      <ContextMenuRadioItem
+                        key={color.friendlyName}
+                        value={color.friendlyName}
+                        style={{ color: color.iconTop }}
+                      >
+                        {color.friendlyName}
+                      </ContextMenuRadioItem>
+                    ))}
+                  </ContextMenuRadioGroup>
+                </ContextMenuSubContent>
+              </ContextMenuSub>
+              <ContextMenuSeparator />
+              <ContextMenuItem inset variant="destructive">
+                Move to Trash
+              </ContextMenuItem>
+            </ContextMenuContent>
+          )}
+        </ContextMenu>
+      ) : (
+        <>{children}</>
       )}
-    </ContextMenu>
+    </>
   );
 }
 
@@ -211,21 +221,24 @@ const FolderCard: React.FC<FolderCardProps> = ({
         <Link href={`/folders/${slug}`}>
           <Card
             className={cn(
-              "relative h-52 w-full cursor-pointer rounded-lg p-0 xl:w-52 xl:min-w-52",
+              // Reduce height and min-width on lg and below
+              "relative h-34 w-full cursor-pointer rounded-md p-0 xl:w-52 xl:min-w-52",
+              "lg:h-52 lg:rounded-lg lg:p-0",
               fullWidth && "w-full min-w-full xl:w-full xl:min-w-full",
             )}
             style={{ background: colorScheme.bg }}
             role="button"
           >
-            <CardContent className="space-y-3 p-5">
+            <CardContent className="space-y-2 p-3 lg:space-y-3 lg:p-5">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 x="0px"
                 y="0px"
+                // Reduce the icon size on lg and below
                 width="87"
                 height="87"
+                className="relative -left-2 h-12 w-12 lg:h-22 lg:w-22"
                 viewBox="0 0 48 48"
-                className="relative -left-2"
               >
                 {/* Folder top */}
                 <path
@@ -241,17 +254,17 @@ const FolderCard: React.FC<FolderCardProps> = ({
               </svg>
               <Typography
                 variant="h4"
-                className="text-secondary-foreground dark:text-muted line-clamp-1 pt-1"
+                className="text-secondary-foreground dark:text-muted line-clamp-1 pt-0 max-lg:text-base lg:pt-1"
               >
                 {title}
               </Typography>
-              <Typography className="text-muted-foreground dark:text-gray-500">
+              <Typography className="text-muted-foreground max-lg:text-xs dark:text-gray-500">
                 {format(new Date(date), "MMM yy")}
               </Typography>
             </CardContent>
           </Card>
         </Link>
-        <div className="absolute top-5 right-5">
+        <div className="absolute top-3 right-3 lg:top-5 lg:right-5">
           <DropdownMenuComp isTrash={isTrash}>
             <Button
               variant="ghost"
