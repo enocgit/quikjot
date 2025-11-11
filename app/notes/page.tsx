@@ -120,7 +120,7 @@ export default function NotesPage() {
       </div>
       <SectionWithSidebar title="Notes">
         {hasNotes ? (
-          <section className="space-y-5">
+          <section className="@container/notes space-y-5">
             <div className="space-y-5">
               <div className="flex items-center gap-2">
                 <Folder className="size-4" />

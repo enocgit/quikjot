@@ -38,6 +38,11 @@ const folders = [
     title: "Recipes. This is a longer title to test the length of the title.",
     date: "2025-01-01",
   },
+  {
+    id: "5",
+    title: "Recipes. This is a longer title to test the length of the title.",
+    date: "2025-01-01",
+  },
 ];
 
 export default function FolderSection() {
@@ -47,7 +52,10 @@ export default function FolderSection() {
     <SectionWithSidebar
       title="Recent Folders"
       seeAllLink={
-        <Link href="/folders" className="text-secondary-foreground w-fit">
+        <Link
+          href="/folders"
+          className="text-secondary-foreground w-fit text-sm md:text-base"
+        >
           See All
         </Link>
       }
@@ -62,7 +70,7 @@ export default function FolderSection() {
         <TabsContent value="all">
           {hasFolders ? (
             <section className="mt-5 gap-3 xl:flex xl:flex-row">
-              <div className="hidden-scrollbar xxs:grid-cols-2 grid grid-cols-1 gap-3 overflow-x-auto min-[520px]:grid-cols-3 md:grid-cols-(--file-grid-cols) xl:flex">
+              <div className="hidden-scrollbar lg:grid-col-4 grid grid-cols-1 gap-3 overflow-x-auto min-[280px]:grid-cols-2 min-[420px]:grid-cols-3 min-[560px]:grid-cols-4 md:grid-cols-3 lg:grid-cols-(--file-grid-cols) xl:flex">
                 {folders.map((folder, index) => (
                   <FolderCard
                     key={index}
