@@ -42,7 +42,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 interface FolderCardProps {
   title: string;
   date: string;
-  colorIndex?: number; // Optional: specify color, otherwise random
+  slug: string;
+  color?: string;
   fullWidth?: boolean;
   isTrash?: boolean;
 }
@@ -203,17 +204,15 @@ function ContextMenuComp({
 const FolderCard: React.FC<FolderCardProps> = ({
   title,
   date,
-  colorIndex,
+  slug,
+  color,
   fullWidth = false,
   isTrash = false,
 }) => {
   // Pick a color scheme
   const colorScheme =
-    typeof colorIndex === "number"
-      ? FOLDER_COLORS[colorIndex % FOLDER_COLORS.length]
-      : FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)];
-
-  const slug = title.toLowerCase().replace(/\s+/g, "-");
+    FOLDER_COLORS.find((c) => c.friendlyName.toLowerCase() === color?.toLowerCase()) ||
+    FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)];
 
   return (
     <ContextMenuComp isTrash={isTrash}>

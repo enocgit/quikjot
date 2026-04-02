@@ -1,0 +1,1 @@
+ALTER TABLE `folders` ADD `slug` text DEFAULT '' NOT NULL;

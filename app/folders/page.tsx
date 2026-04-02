@@ -1,6 +1,4 @@
-"use client";
-
-import React from "react";
+import { getFolders } from "@/actions/folders";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,10 +7,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Link from "next/link";
-import dynamic from "next/dynamic";
-import SectionWithSidebar from "../_components/section-with-sidebar";
-import { MonthNavigator } from "@/components/month-navigator";
+import { Button } from "@/components/ui/button";
 import {
   Empty,
   EmptyContent,
@@ -22,20 +17,18 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Folder } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+import SectionWithSidebar from "../_components/section-with-sidebar";
+import FoldersClient from "./_components/folders-client";
 
-const FolderCard = dynamic(() => import("@/components/folder/folder-card"), {
-  ssr: false,
-});
+const FolderCard = dynamic(() => import("@/components/folder/folder-card"));
 
 const CreateFolderDialog = dynamic(
   () =>
     import("@/components/folder/create-folder-dialog").then(
       (mod) => mod.CreateFolderDialog,
-    ),
-  {
-    ssr: false,
-  },
+    )
 );
 
 function BreadcrumbComp() {
@@ -56,49 +49,24 @@ function BreadcrumbComp() {
   );
 }
 
-export default function FoldersPage() {
-  const folders: any[] = []; // Empty array to simulate empty state
+export default async function FoldersPage() {
+  const folders = await getFolders();
   const hasFolders = folders.length > 0;
-  const [month, setMonth] = React.useState<Date>(new Date());
-
-  const handlePrevMonth = () => {
-    setMonth((prev) => {
-      const d = new Date(prev);
-      d.setMonth(d.getMonth() - 1);
-      return d;
-    });
-  };
-  const handleNextMonth = () => {
-    setMonth((prev) => {
-      const d = new Date(prev);
-      d.setMonth(d.getMonth() + 1);
-      return d;
-    });
-  };
-
-  const handleDateChange = (date: Date) => {
-    setMonth(date);
-  };
 
   return (
     <main className="wrapper py-vertical">
       <BreadcrumbComp />
-      <div className="mt-5 flex items-center justify-end">
-        <MonthNavigator
-          month={month}
-          onPrev={handlePrevMonth}
-          onNext={handleNextMonth}
-          onDateChange={handleDateChange}
-        />
-      </div>
+      <FoldersClient />
       <SectionWithSidebar title="Folders">
         {hasFolders ? (
           <div className="file-grid">
             {folders.map((folder, index) => (
               <FolderCard
                 key={index}
-                title={folder.title}
-                date={folder.date}
+                title={folder.name}
+                date={folder.createdAt.toLocaleDateString()}
+                slug={folder.slug}
+                color={folder.color}
                 fullWidth
               />
             ))}

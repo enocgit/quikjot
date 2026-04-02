@@ -4,6 +4,7 @@ import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const folders = sqliteTable("folders", {
   id: int().primaryKey({ autoIncrement: true }),
   name: text().notNull(),
+  slug: text().notNull().default(""),
   color: text().notNull().default("blue"),
   parentId: int().references((): any => folders.id, { onDelete: "cascade" }),
   deletedAt: int({ mode: "timestamp" }),

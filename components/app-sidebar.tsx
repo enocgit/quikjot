@@ -1,9 +1,11 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { getFolderBySlug } from "@/actions/folders";
 import { Calendar, File, FileText, Folder, Plus, Trash2 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import React, { useState } from "react";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import { CreateFolderDialog } from "./folder/create-folder-dialog";
 import { CreateNoteDialog } from "./note/create-note-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -19,6 +21,19 @@ import { Typography } from "./ui/typography";
 
 const AppSidebar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const params = useParams<{ slug?: string }>();
+  const [currentFolderId, setCurrentFolderId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (params.slug) {
+      getFolderBySlug(params.slug).then((folder) => {
+        if (folder) setCurrentFolderId(folder.id);
+        else setCurrentFolderId(null);
+      });
+    } else {
+      setCurrentFolderId(null);
+    }
+  }, [params.slug]);
 
   return (
     <Sidebar variant="floating">
@@ -64,6 +79,7 @@ const AppSidebar: React.FC = () => {
                             <Folder />
                           </SidebarMenuButton>
                         }
+                        parentId={currentFolderId}
                       />
                       <CreateNoteDialog
                         trigger={
