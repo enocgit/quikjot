@@ -1,22 +1,21 @@
 "use client";
-import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+import { Calendar, File, FileText, Folder, Plus, Trash2 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { Plus, Calendar, Trash2, FileText, Folder, File } from "lucide-react";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "./ui/sidebar";
-import { Typography } from "./ui/typography";
-import { motion, AnimatePresence } from "motion/react";
+import React, { useState } from "react";
 import { CreateFolderDialog } from "./folder/create-folder-dialog";
 import { CreateNoteDialog } from "./note/create-note-dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { cn } from "@/lib/utils";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem
+} from "./ui/sidebar";
+import { Typography } from "./ui/typography";
 
 const AppSidebar: React.FC = () => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -24,12 +23,12 @@ const AppSidebar: React.FC = () => {
   return (
     <Sidebar variant="floating">
       <SidebarHeader>
-        <div className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <FileText />
           <Typography variant="h3" className="font-semibold">
             Quikjot
           </Typography>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>

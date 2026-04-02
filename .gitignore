@@ -43,3 +43,6 @@ next-env.d.ts
 # markdown files
 app-ui.md
 app-functionality.md
+
+# database
+sqlite.db
