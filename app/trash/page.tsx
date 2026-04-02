@@ -79,8 +79,10 @@ export default function TrashPage() {
                 return (
                   <FolderCard
                     key={index}
+                    id={index}
                     title={item.title}
                     date={item.date}
+                    slug={item.title.toLowerCase().replace(/\s+/g, '-')}
                     isTrash={true}
                   />
                 );

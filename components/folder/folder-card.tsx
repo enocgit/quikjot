@@ -1,13 +1,5 @@
 "use client";
 
-import React from "react";
-import { MoreHorizontal } from "lucide-react";
-import { Typography } from "../ui/typography";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { FOLDER_COLORS } from "@/lib/constants";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -34,27 +26,83 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { FOLDER_COLORS } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import React, { useTransition } from "react";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Typography } from "../ui/typography";
 import { MoveFolderDialog } from "./move-folder-dialog";
 import { RenameFolderDialog } from "./rename-folder-dialog";
-import { useIsMobile } from "@/hooks/use-mobile";
+
+import { duplicateFolder, moveFolderToTrash, updateFolderColor } from "@/actions/folders";
 
 interface FolderCardProps {
+  id: number;
   title: string;
   date: string;
   slug: string;
   color?: string;
+  parentId?: number | null;
   fullWidth?: boolean;
   isTrash?: boolean;
+  onUpdate?: (action: 
+    | { type: 'rename', id: number, name: string }
+    | { type: 'update-color', id: number, color: string }
+    | { type: 'move', id: number, parentId: number | null }
+    | any // for other actions if any
+  ) => void;
 }
 
-export function DropdownMenuComp({
+function DropdownMenuComp({
   children,
   isTrash,
+  id,
+  title,
+  parentId,
+  colorFriendlyName,
+  onUpdate,
 }: {
   children: React.ReactNode;
   isTrash?: boolean;
+  id: number;
+  title: string;
+  parentId?: number | null;
+  colorFriendlyName: string;
+  onUpdate?: FolderCardProps["onUpdate"];
 }) {
+  const [, startTransition] = useTransition();
+
+  const handleColorChange = (colorFriendlyName: string) => {
+    startTransition(async () => {
+      if (onUpdate) {
+        onUpdate({ type: "update-color", id, color: colorFriendlyName });
+      }
+      await updateFolderColor(id, colorFriendlyName);
+    });
+  };
+
+  const handleDuplicate = () => {
+    startTransition(async () => {
+      // For duplicate, we just trigger the server action. 
+      // The server will revalidate the page resulting in the new folder appearing.
+      await duplicateFolder(id);
+    });
+  };
+
+  const handleTrash = () => {
+    startTransition(async () => {
+      if (onUpdate) {
+        onUpdate({ type: "trash", id });
+      }
+      await moveFolderToTrash(id);
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -76,6 +124,9 @@ export function DropdownMenuComp({
           <>
             <DropdownMenuGroup>
               <RenameFolderDialog
+                id={id}
+                initialName={title}
+                onRename={(newName) => onUpdate?.({ type: "rename", id, name: newName })}
                 trigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
                     Rename
@@ -83,17 +134,17 @@ export function DropdownMenuComp({
                 }
               />
               <MoveFolderDialog
+                folderId={id}
+                currentParentId={parentId}
+                onMove={(id, newParentId) => onUpdate?.({ type: "move", id, parentId: newParentId })}
                 trigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
                     Move
                   </DropdownMenuItem>
                 }
               />
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
+              <DropdownMenuItem onSelect={handleDuplicate} inset>
                 Duplicate
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
-                Share
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
@@ -106,7 +157,10 @@ export function DropdownMenuComp({
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuRadioGroup value="Green">
+                  <DropdownMenuRadioGroup 
+                    value={colorFriendlyName}
+                    onValueChange={handleColorChange}
+                  >
                     {FOLDER_COLORS.map((color) => (
                       <DropdownMenuRadioItem
                         key={color.friendlyName}
@@ -122,7 +176,7 @@ export function DropdownMenuComp({
             </DropdownMenuSub>
             <DropdownMenuGroup>
               <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()}
+                onSelect={handleTrash}
                 inset
                 variant="destructive"
               >
@@ -139,11 +193,48 @@ export function DropdownMenuComp({
 function ContextMenuComp({
   children,
   isTrash,
+  id,
+  title,
+  parentId,
+  colorFriendlyName,
+  onUpdate,
 }: {
   children: React.ReactNode;
   isTrash?: boolean;
+  id: number;
+  title: string;
+  parentId?: number | null;
+  colorFriendlyName: string;
+  onUpdate?: FolderCardProps["onUpdate"];
 }) {
   const isMobile = useIsMobile();
+
+  const [, startTransition] = useTransition();
+
+  const handleColorChange = (colorFriendlyName: string) => {
+    startTransition(async () => {
+      if (onUpdate) {
+        onUpdate({ type: "update-color", id, color: colorFriendlyName });
+      }
+      await updateFolderColor(id, colorFriendlyName);
+    });
+  };
+
+  const handleDuplicate = () => {
+    startTransition(async () => {
+      await duplicateFolder(id);
+    });
+  };
+
+  const handleTrash = () => {
+    startTransition(async () => {
+      if (onUpdate) {
+        onUpdate({ type: "trash", id });
+      }
+      await moveFolderToTrash(id);
+    });
+  };
+
   return (
     <>
       {!isMobile ? (
@@ -158,23 +249,39 @@ function ContextMenuComp({
             </ContextMenuContent>
           ) : (
             <ContextMenuContent className="w-52">
-              <ContextMenuItem inset>Rename</ContextMenuItem>
+              <RenameFolderDialog
+                id={id}
+                initialName={title}
+                onRename={(newName) => onUpdate?.({ type: "rename", id, name: newName })}
+                trigger={
+                  <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
+                    Rename
+                  </ContextMenuItem>
+                }
+              />
               <MoveFolderDialog
+                folderId={id}
+                currentParentId={parentId}
+                onMove={(id, newParentId) => onUpdate?.({ type: "move", id, parentId: newParentId })}
                 trigger={
                   <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
                     Move
                   </ContextMenuItem>
                 }
               />
-              <ContextMenuItem inset>Duplicate</ContextMenuItem>
-              <ContextMenuItem inset>Share</ContextMenuItem>
+              <ContextMenuItem onSelect={handleDuplicate} inset>
+                Duplicate
+              </ContextMenuItem>
               <ContextMenuSeparator />
               <ContextMenuSub>
                 <ContextMenuSubTrigger inset>
                   Change Color
                 </ContextMenuSubTrigger>
                 <ContextMenuSubContent>
-                  <ContextMenuRadioGroup value="Green">
+                  <ContextMenuRadioGroup 
+                    value={colorFriendlyName}
+                    onValueChange={handleColorChange}
+                  >
                     {FOLDER_COLORS.map((color) => (
                       <ContextMenuRadioItem
                         key={color.friendlyName}
@@ -188,7 +295,7 @@ function ContextMenuComp({
                 </ContextMenuSubContent>
               </ContextMenuSub>
               <ContextMenuSeparator />
-              <ContextMenuItem inset variant="destructive">
+              <ContextMenuItem onSelect={handleTrash} inset variant="destructive">
                 Move to Trash
               </ContextMenuItem>
             </ContextMenuContent>
@@ -202,12 +309,15 @@ function ContextMenuComp({
 }
 
 const FolderCard: React.FC<FolderCardProps> = ({
+  id,
   title,
   date,
   slug,
   color,
+  parentId,
   fullWidth = false,
   isTrash = false,
+  onUpdate,
 }) => {
   // Pick a color scheme
   const colorScheme =
@@ -215,7 +325,7 @@ const FolderCard: React.FC<FolderCardProps> = ({
     FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)];
 
   return (
-    <ContextMenuComp isTrash={isTrash}>
+    <ContextMenuComp isTrash={isTrash} id={id} title={title} parentId={parentId} colorFriendlyName={colorScheme.friendlyName} onUpdate={onUpdate}>
       <div className="relative">
         <Link href={`/folders/${slug}`}>
           <Card
@@ -253,6 +363,7 @@ const FolderCard: React.FC<FolderCardProps> = ({
               </svg>
               <Typography
                 variant="h4"
+                title={title}
                 className="text-secondary-foreground dark:text-muted line-clamp-1 pt-0 max-lg:text-base lg:pt-1"
               >
                 {title}
@@ -264,7 +375,7 @@ const FolderCard: React.FC<FolderCardProps> = ({
           </Card>
         </Link>
         <div className="absolute top-3 right-3 lg:top-5 lg:right-5">
-          <DropdownMenuComp isTrash={isTrash}>
+          <DropdownMenuComp isTrash={isTrash} id={id} title={title} parentId={parentId} colorFriendlyName={colorScheme.friendlyName} onUpdate={onUpdate}>
             <Button
               variant="ghost"
               size="icon"

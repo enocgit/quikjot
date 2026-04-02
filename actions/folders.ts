@@ -27,6 +27,16 @@ export async function getFolders(parentId?: number | null) {
   return allFolders
 }
 
+export async function getAllFolders() {
+  const allFolders = await db
+    .select()
+    .from(folders)
+    .where(isNull(folders.deletedAt))
+    .orderBy(folders.name);
+
+  return allFolders;
+}
+
 export async function getFolderBySlug(slug: string) {
   const [folder] = await db
     .select()
@@ -61,16 +71,16 @@ export async function createFolder(prevState: any, formData: FormData) {
   const slug = name.toLowerCase().replace(/\s+/g, "-");
 
   try {
-    await db.insert(folders).values({
+    const [newFolder] = await db.insert(folders).values({
       name,
       color: color || "blue",
       slug,
       parentId,
-    });
+    }).returning();
 
     revalidatePath("/");
     revalidatePath("/folders");
-    return { success: true };
+    return { success: true, folder: newFolder };
   } catch (error) {
     console.error("Failed to create folder:", error);
     return { error: "Failed to create folder" };
@@ -107,6 +117,58 @@ export async function moveFolder(id: number, parentId: number | null) {
     .where(eq(folders.id, id));
 
   revalidatePath("/folders");
+}
+
+export async function duplicateFolder(id: number) {
+  const [folderToCopy] = await db
+    .select()
+    .from(folders)
+    .where(eq(folders.id, id));
+
+  if (!folderToCopy) return { error: "Folder not found" };
+
+  // Determine new name
+  const isAlreadyCopy = folderToCopy.name.match(/^(.*?) \(Copy(?: (\d+))?\)$/);
+  let baseName = folderToCopy.name;
+  let newName = `${baseName} (Copy)`;
+
+  if (isAlreadyCopy) {
+    baseName = isAlreadyCopy[1];
+  }
+
+  // Find all sibling folders that might conflict
+  const siblingWhere = folderToCopy.parentId === null 
+    ? isNull(folders.parentId) 
+    : eq(folders.parentId, folderToCopy.parentId);
+
+  const existingFolders = await db
+    .select({ name: folders.name })
+    .from(folders)
+    .where(and(siblingWhere, isNull(folders.deletedAt)));
+
+  const names = existingFolders.map(f => f.name);
+
+  if (names.includes(newName)) {
+    let i = 2;
+    while (names.includes(`${baseName} (Copy ${i})`)) {
+      i++;
+    }
+    newName = `${baseName} (Copy ${i})`;
+  }
+
+  const slug = newName.toLowerCase().replace(/\s+/g, "-");
+
+  const [newFolder] = await db.insert(folders).values({
+    name: newName,
+    color: folderToCopy.color,
+    slug,
+    parentId: folderToCopy.parentId,
+  }).returning();
+
+  revalidatePath("/");
+  revalidatePath("/folders");
+
+  return { success: true, folder: newFolder };
 }
 
 // --- TRASH / DELETE ---

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import type { Folder as FolderType } from "@/db/schema";
 import { FOLDER_COLORS } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
 import { useActionState, useEffect, useId, useMemo, useState } from "react";
@@ -21,9 +22,11 @@ import { useActionState, useEffect, useId, useMemo, useState } from "react";
 export function CreateFolderDialog({ 
   trigger,
   parentId = null,
+  onAddOptimistic,
 }: { 
   trigger: React.ReactNode;
   parentId?: number | null;
+  onAddOptimistic?: (folder: FolderType) => void;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -39,11 +42,30 @@ export function CreateFolderDialog({
     }
   }, [state]);
 
+  const handleAction = async (formData: FormData) => {
+    if (onAddOptimistic) {
+      const name = formData.get("name") as string;
+      const color = formData.get("color") as string;
+      const optimisticFolder = {
+        id: Math.random(), // Temporary ID
+        name,
+        color: color || "blue",
+        slug: name.toLowerCase().replace(/\s+/g, "-"),
+        parentId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      };
+      onAddOptimistic(optimisticFolder);
+    }
+    action(formData);
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
-        <form action={action}>
+        <form action={handleAction}>
           <input type="hidden" name="parentId" value={parentId ?? ""} />
           <DialogHeader>
             <DialogTitle>Create new folder</DialogTitle>
