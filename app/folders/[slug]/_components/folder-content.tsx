@@ -114,7 +114,6 @@ export default function FolderContent({
               date={child.createdAt.toLocaleDateString()}
               slug={child.slug}
               color={child.color}
-              fullWidth
               onUpdate={updateOptimisticFolders}
               parentId={child.parentId}
             />

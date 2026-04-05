@@ -70,17 +70,22 @@ export const FOLDER_COLORS = [
 export const FILE_COLORS = [
   {
     bg: "#fce2cb",
+    friendlyName: "Orange",
   },
   {
     bg: "#fdefcb",
+    friendlyName: "Yellow",
   },
   {
     bg: "#deead8",
+    friendlyName: "Green",
   },
   {
     bg: "#e9d4ea",
+    friendlyName: "Purple",
   },
   {
     bg: "#fdd0c2",
+    friendlyName: "Red",
   },
 ];

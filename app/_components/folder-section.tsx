@@ -64,43 +64,52 @@ function filterFolders(folders: FolderType[], tab: TabValue): FolderType[] {
 export default function FolderSection({ folders }: { folders: FolderType[] }) {
   const [optimisticFolders, updateOptimisticFolders] = useOptimistic(
     folders,
-    (state, action: 
-      | { type: 'add', folder: FolderType }
-      | { type: 'rename', id: number, name: string }
-      | { type: 'update-color', id: number, color: string }
-      | { type: 'move', id: number, parentId: number | null }
-      | { type: 'trash', id: number }
+    (
+      state,
+      action:
+        | { type: "add"; folder: FolderType }
+        | { type: "rename"; id: number; name: string }
+        | { type: "update-color"; id: number; color: string }
+        | { type: "move"; id: number; parentId: number | null }
+        | { type: "trash"; id: number },
     ) => {
       switch (action.type) {
-        case 'add':
+        case "add":
           return [action.folder, ...state];
-        case 'rename':
-          return state.map((f) => 
-            f.id === action.id 
-              ? { ...f, name: action.name, slug: action.name.toLowerCase().replace(/\s+/g, "-") } 
-              : f
+        case "rename":
+          return state.map((f) =>
+            f.id === action.id
+              ? {
+                  ...f,
+                  name: action.name,
+                  slug: action.name.toLowerCase().replace(/\s+/g, "-"),
+                }
+              : f,
           );
-        case 'update-color':
-          return state.map((f) => 
-            f.id === action.id ? { ...f, color: action.color } : f
+        case "update-color":
+          return state.map((f) =>
+            f.id === action.id ? { ...f, color: action.color } : f,
           );
-        case 'move':
+        case "move":
           // If we're moving it OUT of this list (parentId changed and isn't null/root for this specific view)
           // For the home page/root list, we only show root folders (parentId is null)
           if (action.parentId !== null) {
             return state.filter((f) => f.id !== action.id);
           }
           return state;
-        case 'trash':
+        case "trash":
           return state.filter((f) => f.id !== action.id);
         default:
           return state;
       }
-    }
+    },
   );
   const [tab, setTab] = useState<TabValue>("all");
 
-  const filtered = useMemo(() => filterFolders(optimisticFolders, tab), [optimisticFolders, tab]);
+  const filtered = useMemo(
+    () => filterFolders(optimisticFolders, tab),
+    [optimisticFolders, tab],
+  );
   const hasFolders = filtered.length > 0;
 
   return (
@@ -124,8 +133,8 @@ export default function FolderSection({ folders }: { folders: FolderType[] }) {
         </TabsList>
         <TabsContent value={tab}>
           {hasFolders ? (
-            <section className="mt-5 gap-3 xl:flex xl:flex-row">
-              <div className="hidden-scrollbar lg:grid-col-4 grid grid-cols-1 gap-3 overflow-x-auto min-[280px]:grid-cols-2 min-[420px]:grid-cols-3 min-[560px]:grid-cols-4 md:grid-cols-3 lg:grid-cols-(--file-grid-cols) xl:flex">
+            <section className="mt-5">
+              <div className="file-grid">
                 {filtered.map((folder) => (
                   <FolderCard
                     key={folder.id}
@@ -160,7 +169,9 @@ export default function FolderSection({ folders }: { folders: FolderType[] }) {
                   <EmptyContent>
                     <CreateFolderDialog
                       trigger={<Button>Create Folder</Button>}
-                      onAddOptimistic={(folder) => updateOptimisticFolders({ type: 'add', folder })}
+                      onAddOptimistic={(folder) =>
+                        updateOptimisticFolders({ type: "add", folder })
+                      }
                     />
                   </EmptyContent>
                 )}

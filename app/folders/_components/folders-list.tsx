@@ -94,7 +94,6 @@ export default function FoldersList({ folders }: { folders: FolderType[] }) {
           date={folder.createdAt.toLocaleDateString()}
           slug={folder.slug}
           color={folder.color}
-          fullWidth
           onUpdate={updateOptimisticFolders}
           parentId={folder.parentId}
         />

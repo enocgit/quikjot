@@ -30,7 +30,6 @@ interface FileCardProps {
   title: string;
   body: string;
   colorIndex?: number; // Optional: specify color, otherwise random
-  fullWidth?: boolean;
   isTrash?: boolean;
 }
 
@@ -126,7 +125,6 @@ const FileCard: React.FC<FileCardProps> = ({
   date,
   colorIndex,
   body,
-  fullWidth = false,
   isTrash = false,
 }) => {
   // Pick a color scheme
@@ -138,14 +136,7 @@ const FileCard: React.FC<FileCardProps> = ({
   return (
     <ContextMenuComp isTrash={isTrash}>
       <Card
-        className={cn(
-          "relative h-52 w-full rounded-md px-0 pt-2 xl:w-52 xl:min-w-52",
-          "md:h-60 md:rounded-lg md:px-0 md:pt-3",
-          {
-            "w-full min-w-full xl:w-full xl:min-w-full": fullWidth,
-            "h-52": isTrash,
-          },
-        )}
+        className="relative h-52 w-full rounded-md px-0 pt-2 md:h-60 md:rounded-lg md:pt-3"
         style={{ background: colorScheme.bg }}
       >
         <CardHeader className="text-secondary-foreground dark:text-background grid grid-cols-2 items-center justify-between max-md:px-3">

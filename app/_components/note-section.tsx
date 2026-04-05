@@ -81,8 +81,8 @@ export default function NoteSection() {
         </TabsList>
         <TabsContent value="all">
           {hasNotes ? (
-            <section className="mt-5 gap-3 xl:flex xl:flex-row">
-              <div className="hidden-scrollbar grid grid-cols-1 gap-3 overflow-x-auto min-[280px]:grid-cols-2 min-[520px]:grid-cols-3 md:grid-cols-(--file-grid-cols) xl:flex">
+            <section className="mt-5">
+              <div className="file-grid">
                 {notes.map((note, index) => (
                   <FileCard
                     key={index}

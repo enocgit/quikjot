@@ -1,6 +1,6 @@
-import SectionWithBreadcrumb from "@/components/section-with-breadcrumb";
 import FileCard from "@/components/file/file-card";
 import FolderCard from "@/components/folder/folder-card";
+import SectionWithBreadcrumb from "@/components/section-with-breadcrumb";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,8 +9,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Link from "next/link";
-import { Typography } from "@/components/ui/typography";
 import {
   Empty,
   EmptyDescription,
@@ -18,7 +16,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Typography } from "@/components/ui/typography";
 import { TrashIcon } from "lucide-react";
+import Link from "next/link";
 
 function BreadcrumbComp() {
   return (
@@ -73,7 +73,7 @@ export default function TrashPage() {
       <SectionWithBreadcrumb renderBreadcrumb={() => <BreadcrumbComp />}>
         <Typography variant="h3">Trash</Typography>
         {hasItems ? (
-          <div className="file-grid">
+          <div className="file-grid items-end">
             {trashedItems.map((item, index) => {
               if (item.type === "folder") {
                 return (
@@ -82,7 +82,7 @@ export default function TrashPage() {
                     id={index}
                     title={item.title}
                     date={item.date}
-                    slug={item.title.toLowerCase().replace(/\s+/g, '-')}
+                    slug={item.title.toLowerCase().replace(/\s+/g, "-")}
                     isTrash={true}
                   />
                 );

@@ -39,7 +39,11 @@ import { Typography } from "../ui/typography";
 import { MoveFolderDialog } from "./move-folder-dialog";
 import { RenameFolderDialog } from "./rename-folder-dialog";
 
-import { duplicateFolder, moveFolderToTrash, updateFolderColor } from "@/actions/folders";
+import {
+  duplicateFolder,
+  moveFolderToTrash,
+  updateFolderColor,
+} from "@/actions/folders";
 
 interface FolderCardProps {
   id: number;
@@ -48,13 +52,13 @@ interface FolderCardProps {
   slug: string;
   color?: string;
   parentId?: number | null;
-  fullWidth?: boolean;
   isTrash?: boolean;
-  onUpdate?: (action: 
-    | { type: 'rename', id: number, name: string }
-    | { type: 'update-color', id: number, color: string }
-    | { type: 'move', id: number, parentId: number | null }
-    | any // for other actions if any
+  onUpdate?: (
+    action:
+      | { type: "rename"; id: number; name: string }
+      | { type: "update-color"; id: number; color: string }
+      | { type: "move"; id: number; parentId: number | null }
+      | any, // for other actions if any
   ) => void;
 }
 
@@ -88,7 +92,7 @@ function DropdownMenuComp({
 
   const handleDuplicate = () => {
     startTransition(async () => {
-      // For duplicate, we just trigger the server action. 
+      // For duplicate, we just trigger the server action.
       // The server will revalidate the page resulting in the new folder appearing.
       await duplicateFolder(id);
     });
@@ -126,7 +130,9 @@ function DropdownMenuComp({
               <RenameFolderDialog
                 id={id}
                 initialName={title}
-                onRename={(newName) => onUpdate?.({ type: "rename", id, name: newName })}
+                onRename={(newName) =>
+                  onUpdate?.({ type: "rename", id, name: newName })
+                }
                 trigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
                     Rename
@@ -136,7 +142,9 @@ function DropdownMenuComp({
               <MoveFolderDialog
                 folderId={id}
                 currentParentId={parentId}
-                onMove={(id, newParentId) => onUpdate?.({ type: "move", id, parentId: newParentId })}
+                onMove={(id, newParentId) =>
+                  onUpdate?.({ type: "move", id, parentId: newParentId })
+                }
                 trigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()} inset>
                     Move
@@ -157,7 +165,7 @@ function DropdownMenuComp({
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuRadioGroup 
+                  <DropdownMenuRadioGroup
                     value={colorFriendlyName}
                     onValueChange={handleColorChange}
                   >
@@ -252,7 +260,9 @@ function ContextMenuComp({
               <RenameFolderDialog
                 id={id}
                 initialName={title}
-                onRename={(newName) => onUpdate?.({ type: "rename", id, name: newName })}
+                onRename={(newName) =>
+                  onUpdate?.({ type: "rename", id, name: newName })
+                }
                 trigger={
                   <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
                     Rename
@@ -262,7 +272,9 @@ function ContextMenuComp({
               <MoveFolderDialog
                 folderId={id}
                 currentParentId={parentId}
-                onMove={(id, newParentId) => onUpdate?.({ type: "move", id, parentId: newParentId })}
+                onMove={(id, newParentId) =>
+                  onUpdate?.({ type: "move", id, parentId: newParentId })
+                }
                 trigger={
                   <ContextMenuItem onSelect={(e) => e.preventDefault()} inset>
                     Move
@@ -278,7 +290,7 @@ function ContextMenuComp({
                   Change Color
                 </ContextMenuSubTrigger>
                 <ContextMenuSubContent>
-                  <ContextMenuRadioGroup 
+                  <ContextMenuRadioGroup
                     value={colorFriendlyName}
                     onValueChange={handleColorChange}
                   >
@@ -295,7 +307,11 @@ function ContextMenuComp({
                 </ContextMenuSubContent>
               </ContextMenuSub>
               <ContextMenuSeparator />
-              <ContextMenuItem onSelect={handleTrash} inset variant="destructive">
+              <ContextMenuItem
+                onSelect={handleTrash}
+                inset
+                variant="destructive"
+              >
                 Move to Trash
               </ContextMenuItem>
             </ContextMenuContent>
@@ -315,26 +331,28 @@ const FolderCard: React.FC<FolderCardProps> = ({
   slug,
   color,
   parentId,
-  fullWidth = false,
   isTrash = false,
   onUpdate,
 }) => {
   // Pick a color scheme
   const colorScheme =
-    FOLDER_COLORS.find((c) => c.friendlyName.toLowerCase() === color?.toLowerCase()) ||
-    FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)];
+    FOLDER_COLORS.find(
+      (c) => c.friendlyName.toLowerCase() === color?.toLowerCase(),
+    ) || FOLDER_COLORS[Math.floor(Math.random() * FOLDER_COLORS.length)];
 
   return (
-    <ContextMenuComp isTrash={isTrash} id={id} title={title} parentId={parentId} colorFriendlyName={colorScheme.friendlyName} onUpdate={onUpdate}>
-      <div className="relative">
+    <ContextMenuComp
+      isTrash={isTrash}
+      id={id}
+      title={title}
+      parentId={parentId}
+      colorFriendlyName={colorScheme.friendlyName}
+      onUpdate={onUpdate}
+    >
+      <div className="relative h-34 lg:h-52">
         <Link href={`/folders/${slug}`}>
           <Card
-            className={cn(
-              // Reduce height and min-width on lg and below
-              "relative h-34 w-full cursor-pointer rounded-md p-0 xl:w-52 xl:min-w-52",
-              "lg:h-52 lg:rounded-lg lg:p-0",
-              fullWidth && "w-full min-w-full xl:w-full xl:min-w-full",
-            )}
+            className="relative cursor-pointer rounded-md p-0 lg:rounded-lg"
             style={{ background: colorScheme.bg }}
             role="button"
           >
@@ -375,7 +393,14 @@ const FolderCard: React.FC<FolderCardProps> = ({
           </Card>
         </Link>
         <div className="absolute top-3 right-3 lg:top-5 lg:right-5">
-          <DropdownMenuComp isTrash={isTrash} id={id} title={title} parentId={parentId} colorFriendlyName={colorScheme.friendlyName} onUpdate={onUpdate}>
+          <DropdownMenuComp
+            isTrash={isTrash}
+            id={id}
+            title={title}
+            parentId={parentId}
+            colorFriendlyName={colorScheme.friendlyName}
+            onUpdate={onUpdate}
+          >
             <Button
               variant="ghost"
               size="icon"

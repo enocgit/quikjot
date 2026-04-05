@@ -26,7 +26,7 @@ const Header: React.FC = () => {
         >
           <MenuIcon />
         </Button>
-        <Typography variant="h3" className="font-semibold">
+        <Typography variant="h3" className="xxs:block hidden font-semibold">
           My Notes
         </Typography>
       </div>
