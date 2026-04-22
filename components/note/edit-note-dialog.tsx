@@ -20,7 +20,7 @@ const FileEditor = dynamic(
 );
 
 import { useActionState, useEffect, useState } from "react";
-import { createNote } from "@/actions/notes";
+import { updateNote } from "@/actions/notes";
 import { Loader2 } from "lucide-react";
 import type { Folder as FolderType } from "@/db/schema";
 import type { Note as NoteType } from "@/db/schema";
@@ -33,30 +33,40 @@ const DEFAULT_INITIAL_VALUE: Descendant[] = [
   },
 ];
 
-export function CreateNoteDialog({
+export function EditNoteDialog({
   trigger,
+  note,
   folders = [],
-  onAddOptimistic,
+  onUpdateOptimistic,
 }: {
   trigger: React.ReactNode;
+  note: NoteType;
   folders?: FolderType[];
-  onAddOptimistic?: (note: NoteType) => void;
+  onUpdateOptimistic?: (note: NoteType) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [state, action, isPending] = useActionState(createNote, null);
+  const [state, action, isPending] = useActionState(updateNote, null);
 
-  const [title, setTitle] = useState("");
-  const [folderId, setFolderId] = useState<number | null>(null);
-  const [content, setContent] = useState<Descendant[]>(DEFAULT_INITIAL_VALUE);
+  const [title, setTitle] = useState(note.title);
+  const [folderId, setFolderId] = useState<number | null>(note.folderId);
 
-  // Reset state when opened
+  // Need to handle missing or stringified content safely
+  const initialContent = note.content
+    ? typeof note.content === "string"
+      ? JSON.parse(note.content)
+      : (note.content as Descendant[])
+    : DEFAULT_INITIAL_VALUE;
+
+  const [content, setContent] = useState<Descendant[]>(initialContent);
+
+  // Reset state when opened to match note
   useEffect(() => {
     if (open) {
-      setTitle("");
-      setFolderId(null);
-      setContent(DEFAULT_INITIAL_VALUE);
+      setTitle(note.title);
+      setFolderId(note.folderId);
+      setContent(initialContent);
     }
-  }, [open]);
+  }, [open, note, initialContent]);
 
   useEffect(() => {
     if (state?.success) {
@@ -65,7 +75,7 @@ export function CreateNoteDialog({
   }, [state]);
 
   const handleAction = async (formData: FormData) => {
-    // Inject the slate editor JSON into the form data before submission
+    formData.set("id", note.id.toString());
     formData.set("content", JSON.stringify(content));
     if (folderId) {
       formData.set("folderId", folderId.toString());
@@ -73,18 +83,15 @@ export function CreateNoteDialog({
       formData.delete("folderId");
     }
 
-    if (onAddOptimistic) {
+    if (onUpdateOptimistic) {
       const optimisticNote = {
-        id: Math.random(), // temporary
+        ...note,
         title,
         content,
-        color: "yellow", // optimistic fallback, server assigns real random color
         folderId,
-        createdAt: new Date(),
         updatedAt: new Date(),
-        deletedAt: null,
       };
-      onAddOptimistic(optimisticNote);
+      onUpdateOptimistic(optimisticNote);
     }
     action(formData);
   };
@@ -95,12 +102,13 @@ export function CreateNoteDialog({
       <DialogContent className="p-0 sm:max-w-4xl">
         <form action={handleAction}>
           <input type="hidden" name="title" value={title} />
+          <input type="hidden" name="id" value={note.id} />
 
           <div className="max-h-[85vh] overflow-y-auto px-6 py-4 pb-0">
             <DialogHeader className="mb-4">
-              <DialogTitle className="sr-only">Create new note</DialogTitle>
+              <DialogTitle className="sr-only">Edit note</DialogTitle>
               <DialogDescription className="sr-only">
-                Create a new note with a title and rich text content.
+                Edit an existing note with a title and rich text content.
               </DialogDescription>
             </DialogHeader>
             <div className="py-2">
@@ -124,7 +132,7 @@ export function CreateNoteDialog({
             </DialogClose>
             <Button type="submit" disabled={isPending || !title.trim()}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Note
+              Save Changes
             </Button>
           </DialogFooter>
         </form>

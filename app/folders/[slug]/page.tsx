@@ -1,6 +1,5 @@
-"use client";
-
-import React from "react";
+import { getFolderBySlug, getFolders } from "@/actions/folders";
+import { getNotes } from "@/actions/notes";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,36 +9,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import { notFound } from "next/navigation";
 import SectionWithSidebar from "../../_components/section-with-sidebar";
-import { MonthNavigator } from "@/components/month-navigator";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { File } from "lucide-react";
-import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import FolderContent from "./_components/folder-content";
 
-const FileCard = dynamic(() => import("@/components/file/file-card"), {
-  ssr: false,
-});
-
-const CreateNoteDialog = dynamic(
-  () =>
-    import("@/components/note/create-note-dialog").then(
-      (mod) => mod.CreateNoteDialog,
-    ),
-  {
-    ssr: false,
-  },
-);
-
-function BreadcrumbComp({ slug }: { slug: string }) {
+function BreadcrumbComp({ folderName }: { folderName: string }) {
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -56,80 +30,37 @@ function BreadcrumbComp({ slug }: { slug: string }) {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>{slug}</BreadcrumbPage>
+          <BreadcrumbPage>{folderName}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
   );
 }
 
-export default function FolderPage() {
-  const params = useParams<{ slug: string }>();
-  const notes: any[] = []; // Empty array to simulate empty state
-  const hasNotes = notes.length > 0;
-  const [month, setMonth] = React.useState<Date>(new Date());
+export default async function FolderPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const folder = await getFolderBySlug(slug);
 
-  const handlePrevMonth = () => {
-    setMonth((prev) => {
-      const d = new Date(prev);
-      d.setMonth(d.getMonth() - 1);
-      return d;
-    });
-  };
-  const handleNextMonth = () => {
-    setMonth((prev) => {
-      const d = new Date(prev);
-      d.setMonth(d.getMonth() + 1);
-      return d;
-    });
-  };
+  if (!folder) {
+    notFound();
+  }
 
-  const handleDateChange = (date: Date) => {
-    setMonth(date);
-  };
+  const childFolders = await getFolders(folder.id);
+  const notes = await getNotes(folder.id);
 
   return (
     <main className="wrapper py-vertical">
-      <BreadcrumbComp slug={params.slug} />
-      <div className="mt-5 flex items-center justify-end">
-        <MonthNavigator
-          month={month}
-          onPrev={handlePrevMonth}
-          onNext={handleNextMonth}
-          onDateChange={handleDateChange}
+      <BreadcrumbComp folderName={folder.name} />
+      <SectionWithSidebar title={folder.name} className="mt-5">
+        <FolderContent
+          folder={folder}
+          initialChildFolders={childFolders}
+          notes={notes}
         />
-      </div>
-      <SectionWithSidebar title={params.slug}>
-        {hasNotes ? (
-          <div className="file-grid">
-            {notes.map((note, index) => (
-              <FileCard
-                key={index}
-                title={note.title}
-                date={note.date}
-                body={note.body}
-                fullWidth
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="flex h-full min-h-52 items-center justify-center">
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <File />
-                </EmptyMedia>
-                <EmptyTitle>No Notes Yet</EmptyTitle>
-                <EmptyDescription>
-                  Create your first note in this folder to get started.
-                </EmptyDescription>
-              </EmptyHeader>
-              <EmptyContent>
-                <CreateNoteDialog trigger={<Button>Create Note</Button>} />
-              </EmptyContent>
-            </Empty>
-          </div>
-        )}
       </SectionWithSidebar>
     </main>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { getAllFolders, moveFolder } from "@/actions/folders";
+import { getAllFolders } from "@/actions/folders";
+import { moveNote } from "@/actions/notes";
 import {
   CommandDialog,
   CommandEmpty,
@@ -14,19 +15,19 @@ import { Folder as FolderIcon, Loader2 } from "lucide-react";
 import * as React from "react";
 import { useTransition } from "react";
 
-interface MoveFolderDialogProps {
+interface MoveNoteDialogProps {
   trigger: React.ReactNode;
-  folderId?: number;
+  noteId?: number;
   currentParentId?: number | null;
   onMove?: (id: number, newParentId: number | null) => void;
 }
 
-export function MoveFolderDialog({ 
-  trigger, 
-  folderId, 
+export function MoveNoteDialog({
+  trigger,
+  noteId,
   currentParentId,
-  onMove 
-}: MoveFolderDialogProps) {
+  onMove,
+}: MoveNoteDialogProps) {
   const [open, setOpen] = React.useState(false);
   const [allFolders, setAllFolders] = React.useState<FolderType[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -42,49 +43,23 @@ export function MoveFolderDialog({
     }
   }, [open]);
 
-  // Helper to check if a folder is a descendant of the folder being moved
-  const isDescendant = (targetParentId: number | null, sourceFolderId: number) => {
-    if (targetParentId === null) return false;
-    if (targetParentId === sourceFolderId) return true;
-    
-    let currentId: number | null = targetParentId;
-    const visited = new Set<number>(); // Prevent infinite loops if DB has corrupt cycles
-    
-    while (currentId !== null) {
-      if (visited.has(currentId)) break;
-      visited.add(currentId);
-      
-      const parentFolder = allFolders.find(f => f.id === currentId);
-      if (!parentFolder) break;
-      
-      if (parentFolder.parentId === sourceFolderId) return true;
-      currentId = parentFolder.parentId;
-    }
-    
-    return false;
-  };
-
   const handleMove = (newParentId: number | null) => {
-    if (!folderId) return;
-    
+    if (!noteId) return;
+
     startTransition(async () => {
       if (onMove) {
-        onMove(folderId, newParentId);
+        onMove(noteId, newParentId);
       }
       setOpen(false);
-      await moveFolder(folderId, newParentId);
+      await moveNote(noteId, newParentId);
     });
   };
 
   const folderMap = React.useMemo(() => {
     const map = new Map<number, string>();
-    allFolders.forEach(f => map.set(f.id, f.name));
+    allFolders.forEach((f) => map.set(f.id, f.name));
     return map;
   }, [allFolders]);
-
-  const availableFolders = folderId 
-    ? allFolders.filter(f => f.id !== folderId && !isDescendant(f.id, folderId))
-    : allFolders;
 
   return (
     <>
@@ -94,7 +69,7 @@ export function MoveFolderDialog({
         <CommandList>
           {loading ? (
             <div className="flex items-center justify-center py-6">
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              <Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
             </div>
           ) : (
             <>
@@ -102,19 +77,17 @@ export function MoveFolderDialog({
               <CommandGroup heading="Locations">
                 {/* Root location */}
                 {currentParentId !== null && (
-                  <CommandItem
-                    value="root"
-                    onSelect={() => handleMove(null)}
-                  >
+                  <CommandItem value="root" onSelect={() => handleMove(null)}>
                     <FolderIcon className="mr-2 h-4 w-4" />
                     <span>All Notes (Root)</span>
                   </CommandItem>
                 )}
-                
-                {availableFolders.map((folder) => {
-                  const parentName = folder.parentId != null 
-                    ? folderMap.get(folder.parentId) 
-                    : null;
+
+                {allFolders.map((folder) => {
+                  const parentName =
+                    folder.parentId != null
+                      ? folderMap.get(folder.parentId)
+                      : null;
 
                   return (
                     <CommandItem
@@ -127,7 +100,7 @@ export function MoveFolderDialog({
                       <FolderIcon className="mr-2 h-4 w-4 shrink-0" />
                       <div className="flex flex-col">
                         {parentName && (
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-muted-foreground text-xs">
                             {parentName}
                           </span>
                         )}
