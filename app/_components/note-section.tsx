@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/empty";
 import SectionWithSidebar from "./section-with-sidebar";
 import { Button } from "@/components/ui/button";
+import type { Folder as FolderType, Note as NoteType } from "@/db/schema";
+import { useMemo, useOptimistic, useState } from "react";
 
 const CreateNoteDialog = dynamic(
   () =>
@@ -30,65 +32,112 @@ const FileCard = dynamic(() => import("@/components/file/file-card"), {
   ssr: false,
 });
 
-const notes = [
-  {
-    id: "1",
-    title: "Note 1",
-    date: "2025-01-01",
-    body: "This is a note about the note 1. This is a bit longer note to test the length of the note.",
-  },
-  {
-    id: "2",
-    title: "Note 2",
-    date: "2025-01-01",
-    body: "This is a note about the note 2",
-  },
-  {
-    id: "3",
-    title: "Note 3. This is a longer title to test the length of the title.",
-    date: "2025-01-01",
-    body: "This is a note about the note 3. This is a bit longer note to test the length of the note.",
-  },
-  {
-    id: "4",
-    title: "Note 4",
-    date: "2025-01-01",
-    body: "This is a note about the note 4",
-  },
-];
+type TabValue = "all" | "today" | "this-week" | "this-month";
 
-export default function NoteSection() {
-  const hasNotes = notes.length > 0;
+function filterNotes(notes: NoteType[], tab: TabValue): NoteType[] {
+  if (tab === "all") return notes;
+
+  const now = new Date();
+
+  return notes.filter((note) => {
+    const created = new Date(note.createdAt);
+
+    if (tab === "today") {
+      return created.toDateString() === now.toDateString();
+    }
+
+    if (tab === "this-week") {
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+      return created >= startOfWeek;
+    }
+
+    if (tab === "this-month") {
+      return (
+        created.getFullYear() === now.getFullYear() &&
+        created.getMonth() === now.getMonth()
+      );
+    }
+
+    return true;
+  });
+}
+
+// Mock data removed.
+
+export default function NoteSection({
+  notes = [],
+  folders = [],
+}: {
+  notes?: NoteType[];
+  folders?: FolderType[];
+}) {
+  const [optimisticNotes, updateOptimisticNotes] = useOptimistic(
+    notes,
+    (
+      state,
+      action:
+        | { type: "add"; note: NoteType }
+        | { type: "move"; id: number; parentId: number | null }
+        | { type: "trash"; id: number }
+        | { type: "update"; note: NoteType },
+    ) => {
+      switch (action.type) {
+        case "add":
+          return [action.note, ...state];
+        case "update":
+          return state.map((n) => (n.id === action.note.id ? action.note : n));
+        case "move":
+          // Moves don't hide root notes in NoteSection typically, but since
+          // NoteSection shows ALL notes (if it's the home page and not filtered)
+          // maybe we don't drop them. Wait, if it gets moved to a folder, it's not root...
+          // But "My Notes" usually shows all notes unless we filter root notes.
+          // The page passes getNotes() which gives `folderId IS NULL`. So Yes, we hide moved!
+          if (action.parentId !== null) {
+            return state.filter((n) => n.id !== action.id);
+          }
+          return state;
+        case "trash":
+          return state.filter((n) => n.id !== action.id);
+        default:
+          return state;
+      }
+    },
+  );
+
+  const [tab, setTab] = useState<TabValue>("all");
+
+  const filtered = useMemo(
+    () => filterNotes(optimisticNotes, tab),
+    [optimisticNotes, tab],
+  );
+
+  const hasNotes = filtered.length > 0;
 
   return (
-    <SectionWithSidebar
-      title="My Notes"
-      seeAllLink={
-        <Link
-          href="/notes"
-          className="text-secondary-foreground w-fit text-sm md:text-base"
-        >
-          See All
-        </Link>
-      }
-    >
-      <Tabs defaultValue="all">
+    <SectionWithSidebar title="Recent Notes">
+      <Tabs value={tab} onValueChange={(v) => setTab(v as TabValue)}>
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="today">Today</TabsTrigger>
           <TabsTrigger value="this-week">This Week</TabsTrigger>
           <TabsTrigger value="this-month">This Month</TabsTrigger>
         </TabsList>
-        <TabsContent value="all">
+        <TabsContent value={tab}>
           {hasNotes ? (
             <section className="mt-5">
               <div className="file-grid">
-                {notes.map((note, index) => (
+                {filtered.map((note) => (
                   <FileCard
-                    key={index}
+                    key={note.id}
+                    id={note.id}
+                    folderId={note.folderId}
                     title={note.title}
-                    date={note.date}
-                    body={note.body}
+                    color={note.color}
+                    date={note.createdAt.toLocaleDateString()}
+                    body={note.content as any} // render text inside FileCard or it strips Slate JSON
+                    onUpdate={updateOptimisticNotes}
                   />
                 ))}
               </div>
@@ -100,14 +149,26 @@ export default function NoteSection() {
                   <EmptyMedia variant="icon">
                     <File />
                   </EmptyMedia>
-                  <EmptyTitle>No Notes Yet</EmptyTitle>
+                  <EmptyTitle>
+                    {tab === "all" ? "No Notes Yet" : "No notes found"}
+                  </EmptyTitle>
                   <EmptyDescription>
-                    Create your first note to get started.
+                    {tab === "all"
+                      ? "Create your first note to get started."
+                      : "No notes were created in this period."}
                   </EmptyDescription>
                 </EmptyHeader>
-                <EmptyContent>
-                  <CreateNoteDialog trigger={<Button>Create Note</Button>} />
-                </EmptyContent>
+                {tab === "all" && (
+                  <EmptyContent>
+                    <CreateNoteDialog
+                      trigger={<Button>Create Note</Button>}
+                      folders={folders}
+                      onAddOptimistic={(note) =>
+                        updateOptimisticNotes({ type: "add", note })
+                      }
+                    />
+                  </EmptyContent>
+                )}
               </Empty>
             </div>
           )}

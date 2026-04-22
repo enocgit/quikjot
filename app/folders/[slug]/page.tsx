@@ -1,4 +1,5 @@
 import { getFolderBySlug, getFolders } from "@/actions/folders";
+import { getNotes } from "@/actions/notes";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -49,16 +50,16 @@ export default async function FolderPage({
   }
 
   const childFolders = await getFolders(folder.id);
-  const notes: any[] = []; // Still empty as we are focusing on folders
+  const notes = await getNotes(folder.id);
 
   return (
     <main className="wrapper py-vertical">
       <BreadcrumbComp folderName={folder.name} />
       <SectionWithSidebar title={folder.name} className="mt-5">
-        <FolderContent 
-          folder={folder} 
-          initialChildFolders={childFolders} 
-          notes={notes} 
+        <FolderContent
+          folder={folder}
+          initialChildFolders={childFolders}
+          notes={notes}
         />
       </SectionWithSidebar>
     </main>

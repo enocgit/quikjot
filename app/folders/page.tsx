@@ -1,4 +1,5 @@
 import { getFolders } from "@/actions/folders";
+import { getRootNotes } from "@/actions/notes";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -31,12 +32,13 @@ function BreadcrumbComp() {
 
 export default async function FoldersPage() {
   const folders = await getFolders();
+  const notes = await getRootNotes();
 
   return (
     <main className="wrapper py-vertical">
       <BreadcrumbComp />
       <SectionWithSidebar title="Folders" className="mt-5">
-        <FoldersList folders={folders} />
+        <FoldersList folders={folders} notes={notes} />
       </SectionWithSidebar>
     </main>
   );

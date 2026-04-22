@@ -69,7 +69,22 @@ const isListFormat = (format: CustomElementFormat): format is ListType => {
   return format === "numbered-list" || format === "bulleted-list";
 };
 
-const SlateEditor = () => {
+const DEFAULT_INITIAL_VALUE: Descendant[] = [
+  {
+    type: "paragraph",
+    children: [{ text: "" }],
+  },
+];
+
+interface SlateEditorProps {
+  initialValue?: Descendant[];
+  onChange?: (value: Descendant[]) => void;
+}
+
+const SlateEditor = ({
+  initialValue = DEFAULT_INITIAL_VALUE,
+  onChange,
+}: SlateEditorProps) => {
   const renderElement = useCallback(
     (props: RenderElementProps) => <Element {...props} />,
     [],
@@ -81,7 +96,15 @@ const SlateEditor = () => {
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
   return (
-    <Slate editor={editor} initialValue={initialValue}>
+    <Slate
+      editor={editor}
+      initialValue={initialValue}
+      onValueChange={(value) => {
+        if (onChange) {
+          onChange(value);
+        }
+      }}
+    >
       <Toolbar className="flex-wrap">
         <MarkButton format="bold" icon={<Bold className="size-4" />} />
         <MarkButton format="italic" icon={<Italic className="size-4" />} />
@@ -301,6 +324,7 @@ const BlockButton = ({
   const editor = useSlate();
   return (
     <Button
+      type="button"
       variant="outline"
       size="icon"
       className={cn("h-8 w-8", {
@@ -330,6 +354,7 @@ const MarkButton = ({
   const editor = useSlate();
   return (
     <Button
+      type="button"
       variant="outline"
       size="icon"
       className={cn("h-8 w-8", { "bg-muted": isMarkActive(editor, format) })}
@@ -358,11 +383,5 @@ const Toolbar = React.forwardRef<
 ));
 Toolbar.displayName = "Toolbar";
 
-const initialValue: Descendant[] = [
-  {
-    type: "paragraph",
-    children: [{ text: "" }],
-  },
-];
-
+// Note: we moved DEFAULT_INITIAL_VALUE up.
 export default SlateEditor;

@@ -15,6 +15,13 @@
       "when": 1775141217164,
       "tag": "0001_flawless_talkback",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1775351779143,
+      "tag": "0002_omniscient_beyonder",
+      "breakpoints": true
     }
   ]
 }

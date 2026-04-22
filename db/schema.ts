@@ -8,18 +8,27 @@ export const folders = sqliteTable("folders", {
   color: text().notNull().default("blue"),
   parentId: int().references((): any => folders.id, { onDelete: "cascade" }),
   deletedAt: int({ mode: "timestamp" }),
-  createdAt: int({ mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
-  updatedAt: int({ mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
+  createdAt: int({ mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: int({ mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
 });
 
 export const notes = sqliteTable("notes", {
   id: int().primaryKey({ autoIncrement: true }),
   title: text().notNull(),
   content: text({ mode: "json" }),
+  color: text().notNull().default("yellow"),
   folderId: int().references(() => folders.id, { onDelete: "set null" }),
   deletedAt: int({ mode: "timestamp" }),
-  createdAt: int({ mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
-  updatedAt: int({ mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
+  createdAt: int({ mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: int({ mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
 });
 
 export type Folder = typeof folders.$inferSelect;
